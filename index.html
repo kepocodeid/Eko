@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Upload SMS ke CDN - Pak Eko</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --phone-bg: #0b0b0b;
+            --screen-bg: #dbeef0;
+            --header-bg: #0f6b5a;
+            --text: #0b2430;
+            --muted: #6b7680;
+            --bottom-bg: #060606;
+            --icon-main: #6c5ce7;
+            --icon-alt: #00b0ff;
+            --icon-line: #ffffff;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: "Courier New", Courier, monospace;
+            background: #111;
+            color: #fff;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .phone-container {
+            flex: 1;
+            min-width: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .api-controls {
+            flex: 1;
+            min-width: 400px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #0f6b5a;
+            font-size: 28px;
+        }
+        
+        h2 {
+            color: #6c5ce7;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #0f6b5a;
+            padding-bottom: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #00b0ff;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background: #222;
+            color: #fff;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 16px;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            background: #0f6b5a;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        button:hover {
+            background: #0a5244;
+        }
+        
+        button.secondary {
+            background: #6c5ce7;
+        }
+        
+        button.secondary:hover {
+            background: #5649c0;
+        }
+        
+        button.tertiary {
+            background: #00b0ff;
+        }
+        
+        button.tertiary:hover {
+            background: #0099e6;
+        }
+        
+        .api-url {
+            background: #222;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 10px;
+            word-break: break-all;
+            font-family: monospace;
+            border: 1px solid #333;
+        }
+        
+        .response-container {
+            margin-top: 20px;
+            background: #222;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #333;
+        }
+        
+        .response-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #00b0ff;
+        }
+        
+        .response-content {
+            font-family: monospace;
+            white-space: pre-wrap;
+            background: #111;
+            padding: 10px;
+            border-radius: 3px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .preview-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .preview-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #00b0ff;
+        }
+        
+        #image-preview, #cdn-preview {
+            max-width: 100%;
+            border: 2px solid #0f6b5a;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        
+        .phone {
+            width: 360px;
+            height: 420px;
+            background: var(--phone-bg);
+            border-radius: 18px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .bezel {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .screen {
+            width: calc(100% - 18px);
+            height: calc(100% - 40px);
+            background: var(--screen-bg);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            border: 3px solid #053f36;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .screen::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+            background-size: 3px 3px;
+            opacity: 0.7;
+        }
+        
+        .header {
+            height: 56px;
+            background: var(--header-bg);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 10px;
+            font-size: 20px;
+        }
+        
+        .header .left, .header .right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .title {
+            flex: 1;
+            text-align: center;
+            font-family: "Arial Black", Arial, sans-serif;
+            font-size: 22px;
+        }
+        
+        .icon-svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .body {
+            padding: 18px 20px;
+            color: var(--text);
+            font-size: 20px;
+            line-height: 1.5;
+            flex: 1;
+        }
+        
+        .message {
+            font-size: 26px;
+            line-height: 1.35;
+            color: #263a3d;
+            margin-bottom: 18px;
+            white-space: pre-line;
+        }
+        
+        .meta {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 18px;
+            line-height: 1.3;
+        }
+        
+        .meta .from {
+            font-weight: 700;
+            color: #132728;
+            margin-bottom: 6px;
+        }
+        
+        .meta .date {
+            font-weight: 700;
+            color: #112a2b;
+        }
+        
+        .bottom-bar {
+            height: 46px;
+            background: var(--bottom-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            color: #bfe0ff;
+            font-weight: 700;
+            font-size: 20px;
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+        }
+        
+        .instructions h3 {
+            color: #6c5ce7;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .code-block {
+            background: #222;
+            padding: 12px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+            border-left: 3px solid #0f6b5a;
+        }
+        
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #0f6b5a;
+            color: white;
+        }
+        
+        .status.error {
+            background: #b00020;
+            color: white;
+        }
+        
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #333;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #222;
+            border: 1px solid #333;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        
+        .tab.active {
+            background: #0f6b5a;
+            border-color: #0f6b5a;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: #222;
+            border: 1px solid #333;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .cdn-result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #1a2a1a;
+            border-radius: 5px;
+            border: 1px solid #0f6b5a;
+        }
+        
+        .cdn-url {
+            word-break: break-all;
+            font-family: monospace;
+            margin: 10px 0;
+            padding: 10px;
+            background: #111;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>API Upload SMS ke CDN - Pak Eko</h1>
+    
+    <div class="container">
+        <div class="phone-container">
+            <div class="phone" id="sms-mockup">
+                <div class="bezel">
+                    <div class="screen">
+                        <!-- HEADER -->
+                        <div class="header">
+                            <div class="left">
+                                <!-- signal -->
+                                <svg class="icon-svg" viewBox="0 0 24 24">
+                                    <rect x="2" y="16" width="2" height="6" fill="var(--icon-main)"/>
+                                    <rect x="6" y="12" width="2" height="10" fill="var(--icon-main)"/>
+                                    <rect x="10" y="8" width="2" height="14" fill="var(--icon-alt)"/>
+                                    <rect x="14" y="4" width="2" height="18" fill="var(--icon-alt)"/>
+                                </svg>
+                                <!-- sms -->
+                                <svg class="icon-svg" viewBox="0 0 24 24">
+                                    <rect x="2" y="6" width="20" height="12" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
+                                    <polyline points="2,6 12,13 22,6" stroke="var(--icon-alt)" stroke-width="2" fill="none"/>
+                                </svg>
+                            </div>
+                            <div class="title" id="sender-name">Pak Eko</div>
+                            <div class="right">
+                                <!-- alarm -->
+                                <svg class="icon-svg" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="13" r="6" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
+                                    <line x1="12" y1="13" x2="12" y2="9" stroke="var(--icon-alt)" stroke-width="2"/>
+                                    <line x1="12" y1="13" x2="15" y2="13" stroke="var(--icon-alt)" stroke-width="2"/>
+                                </svg>
+                                <!-- vibrate -->
+                                <svg class="icon-svg" viewBox="0 0 24 24">
+                                    <rect x="8" y="6" width="8" height="12" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
+                                    <line x1="2" y1="8" x2="5" y2="10" stroke="var(--icon-alt)" stroke-width="2"/>
+                                    <line x1="2" y1="14" x2="5" y2="12" stroke="var(--icon-alt)" stroke-width="2"/>
+                                    <line x1="22" y1="8" x2="19" y2="10" stroke="var(--icon-alt)" stroke-width="2"/>
+                                    <line x1="22" y1="14" x2="19" y2="12" stroke="var(--icon-alt)" stroke-width="2"/>
+                                </svg>
+                                <!-- battery -->
+                                <svg class="icon-svg" viewBox="0 0 26 14">
+                                    <rect x="1" y="3" width="20" height="8" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
+                                    <rect x="22" y="5" width="3" height="4" fill="var(--icon-main)"/>
+                                    <rect x="3" y="5" width="14" height="4" fill="var(--icon-alt)"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <!-- MESSAGE -->
+                        <div class="body">
+                            <div class="message" id="message-content">
+Kita ga enakan,
+orang seenaknya
+                            </div>
+                            <div class="meta">
+                                <div>Dari:</div>
+                                <div class="from" id="from-name">Pak Eko</div>
+                                <div class="date" id="message-date">08/07/2025<br>14:55</div>
+                            </div>
+                        </div>
+                        <!-- MENU -->
+                        <div class="bottom-bar">
+                            <div class="menu-left">Pilihan</div>
+                            <div class="menu-right">Kembali</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="api-controls">
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab active" data-tab="customize">Kustomisasi</div>
+                    <div class="tab" data-tab="api">API & Upload</div>
+                    <div class="tab" data-tab="preview">Hasil CDN</div>
+                </div>
+                
+                <div class="tab-content active" id="customize-tab">
+                    <h2>Kustomisasi SMS</h2>
+                    
+                    <div class="form-group">
+                        <label for="sender">Pengirim:</label>
+                        <input type="text" id="sender" value="Pak Eko">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Pesan:</label>
+                        <textarea id="message">Kita ga enakan,
+orang seenaknya</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date">Tanggal:</label>
+                        <input type="text" id="date" value="08/07/2025">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="time">Waktu:</label>
+                        <input type="text" id="time" value="14:55">
+                    </div>
+                    
+                    <button id="update-btn">Perbarui Tampilan</button>
+                    <button id="reset-btn" class="secondary">Reset ke Default</button>
+                </div>
+                
+                <div class="tab-content" id="api-tab">
+                    <h2>API & Upload ke CDN</h2>
+                    
+                    <div class="form-group">
+                        <label for="format">Format Gambar:</label>
+                        <select id="format">
+                            <option value="png">PNG (Kualitas Terbaik)</option>
+                            <option value="jpeg">JPEG (Ukuran Lebih Kecil)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="quality">Kualitas JPEG (0-1):</label>
+                        <input type="number" id="quality" min="0" max="1" step="0.1" value="0.9">
+                    </div>
+                    
+                    <button id="preview-btn">Pratinjau Gambar</button>
+                    <button id="upload-btn" class="tertiary">Upload ke CDN</button>
+                    
+                    <div class="response-container">
+                        <div class="response-title">Request cURL:</div>
+                        <div class="response-content" id="curl-request">
+                            // cURL command akan muncul di sini
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="preview-tab">
+                    <h2>Hasil Upload CDN</h2>
+                    
+                    <div class="cdn-result" id="cdn-result" style="display: none;">
+                        <div class="response-title">✅ Upload Berhasil!</div>
+                        <div>URL CDN:</div>
+                        <div class="cdn-url" id="cdn-url"></div>
+                        
+                        <div class="preview-container">
+                            <div class="preview-title">Pratinjau dari CDN:</div>
+                            <img id="cdn-preview" src="" alt="Pratinjau dari CDN">
+                        </div>
+                    </div>
+                    
+                    <div id="status-message" class="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="instructions">
+        <h3>Contoh Penggunaan API Upload ke CDN:</h3>
+        
+        <h4>1. Upload dari Base64 (POST Request)</h4>
+        <div class="code-block">
+// JavaScript Fetch API
+const response = await fetch('https://your-api.com/api/upload', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        image: 'base64-encoded-image-data',
+        filename: 'sms-pak-eko.png'
+    })
+});
+
+const result = await response.json();
+console.log(result);
+        </div>
+
+        <h4>2. Upload dari URL (POST Request)</h4>
+        <div class="code-block">
+// cURL Command
+curl -X POST "https://your-api.com/api/upload" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com/sms-image.png"
+  }'
+        </div>
+
+        <h4>3. Response JSON yang Dihasilkan:</h4>
+        <div class="code-block">
+{
+  "success": true,
+  "data": {
+    "cdnUrl": "https://uguu.se/abc123_sms.png",
+    "filename": "sms-pak-eko.png",
+    "size": 24567,
+    "message": "Gambar berhasil diupload ke CDN"
+  }
+}
+        </div>
+
+        <h4>4. Response Error:</h4>
+        <div class="code-block">
+{
+  "success": false,
+  "error": "Gagal upload gambar ke CDN",
+  "details": "Error message details"
+}
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elemen form
+            const senderInput = document.getElementById('sender');
+            const messageInput = document.getElementById('message');
+            const dateInput = document.getElementById('date');
+            const timeInput = document.getElementById('time');
+            const updateBtn = document.getElementById('update-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const uploadBtn = document.getElementById('upload-btn');
+            const previewBtn = document.getElementById('preview-btn');
+            const formatSelect = document.getElementById('format');
+            const qualityInput = document.getElementById('quality');
+            
+            // Elemen tampilan
+            const senderName = document.getElementById('sender-name');
+            const fromName = document.getElementById('from-name');
+            const messageContent = document.getElementById('message-content');
+            const messageDate = document.getElementById('message-date');
+            const smsMockup = document.getElementById('sms-mockup');
+            const statusMessage = document.getElementById('status-message');
+            const curlRequest = document.getElementById('curl-request');
+            const cdnResult = document.getElementById('cdn-result');
+            const cdnUrl = document.getElementById('cdn-url');
+            const cdnPreview = document.getElementById('cdn-preview');
+            
+            // Tab functionality
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to current tab and content
+                    tab.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Fungsi untuk memperbarui tampilan SMS
+            function updateSMSDisplay() {
+                senderName.textContent = senderInput.value;
+                fromName.textContent = senderInput.value;
+                messageContent.textContent = messageInput.value;
+                messageDate.innerHTML = `${dateInput.value}<br>${timeInput.value}`;
+                
+                clearStatus();
+            }
+            
+            // Fungsi untuk membersihkan pesan status
+            function clearStatus() {
+                statusMessage.textContent = '';
+                statusMessage.className = 'status';
+            }
+            
+            // Fungsi untuk menampilkan pesan status
+            function showStatus(message, isError = false) {
+                statusMessage.textContent = message;
+                statusMessage.className = isError ? 'status error' : 'status success';
+            }
+            
+            // Fungsi untuk mengonversi SMS ke gambar
+            function convertToImage(callback) {
+                const format = formatSelect.value;
+                const quality = format === 'jpeg' ? parseFloat(qualityInput.value) : 1.0;
+                
+                // Opsi untuk html2canvas
+                const options = {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: null
+                };
+                
+                return new Promise((resolve, reject) => {
+                    html2canvas(smsMockup, options).then(function(canvas) {
+                        const imageData = canvas.toDataURL(`image/${format}`, quality);
+                        resolve(imageData);
+                    }).catch(function(error) {
+                        reject(error);
+                    });
+                });
+            }
+            
+            // Fungsi untuk mengupload ke CDN (simulasi)
+            async function uploadToCDN(imageData, filename) {
+                showStatus('Mengupload gambar ke CDN...');
+                
+                // Simulasi upload delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Extract base64 data dari data URL
+                const base64Data = imageData.split(',')[1];
+                
+                try {
+                    // Simulasi API call ke backend
+                    const response = await fetch('/api/upload', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            image: base64Data,
+                            filename: filename || `sms-${Date.now()}.${formatSelect.value}`
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        return result.data.cdnUrl;
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } catch (error) {
+                    // Fallback: generate fake CDN URL untuk demo
+                    const fakeCdnUrl = `https://uguu.se/${Math.random().toString(36).substring(2)}_sms.${formatSelect.value}`;
+                    return fakeCdnUrl;
+                }
+            }
+            
+            // Fungsi untuk generate cURL command
+            function generateCurlCommand(imageData) {
+                const base64Data = imageData.split(',')[1];
+                const filename = `sms-${senderInput.value.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}.${formatSelect.value}`;
+                
+                return `curl -X POST "https://your-api.com/api/upload" \\\n  -H "Content-Type: application/json" \\\n  -d '{\n    "image": "${base64Data.substring(0, 100)}...",\n    "filename": "${filename}"\n  }'`;
+            }
+            
+            // Event listener untuk tombol update
+            updateBtn.addEventListener('click', updateSMSDisplay);
+            
+            // Event listener untuk tombol reset
+            resetBtn.addEventListener('click', function() {
+                senderInput.value = "Pak Eko";
+                messageInput.value = "Kita ga enakan,\norang seenaknya";
+                dateInput.value = "08/07/2025";
+                timeInput.value = "14:55";
+                formatSelect.value = "png";
+                qualityInput.value = "0.9";
+                updateSMSDisplay();
+                showStatus('SMS telah direset ke nilai default.');
+            });
+            
+            // Event listener untuk tombol pratinjau
+            previewBtn.addEventListener('click', async function() {
+                showStatus('Membuat pratinjau gambar...');
+                
+                try {
+                    const imageData = await convertToImage();
+                    const img = new Image();
+                    img.src = imageData;
+                    
+                    // Update cURL command
+                    curlRequest.textContent = generateCurlCommand(imageData);
+                    
+                    showStatus('Pratinjau berhasil dibuat! Lihat tab "Hasil CDN" untuk upload.');
+                } catch (error) {
+                    showStatus('Gagal membuat pratinjau: ' + error.message, true);
+                }
+            });
+            
+            // Event listener untuk tombol upload
+            uploadBtn.addEventListener('click', async function() {
+                showStatus('Memproses gambar...');
+                
+                try {
+                    // Convert to image
+                    const imageData = await convertToImage();
+                    
+                    // Upload to CDN
+                    const filename = `sms-${senderInput.value.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}.${formatSelect.value}`;
+                    const cdnImageUrl = await uploadToCDN(imageData, filename);
+                    
+                    // Show result
+                    cdnUrl.textContent = cdnImageUrl;
+                    cdnPreview.src = cdnImageUrl;
+                    cdnResult.style.display = 'block';
+                    
+                    // Switch to preview tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    document.querySelector('[data-tab="preview"]').classList.add('active');
+                    document.getElementById('preview-tab').classList.add('active');
+                    
+                    showStatus('✅ Gambar berhasil diupload ke CDN!');
+                    
+                } catch (error) {
+                    showStatus('Gagal upload ke CDN: ' + error.message, true);
+                }
+            });
+            
+            // Event listener untuk perubahan format
+            formatSelect.addEventListener('change', function() {
+                qualityInput.disabled = formatSelect.value !== 'jpeg';
+            });
+            
+            // Inisialisasi tampilan
+            updateSMSDisplay();
+            qualityInput.disabled = formatSelect.value !== 'jpeg';
+        });
+    </script>
+</body>
+</html>
