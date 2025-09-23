@@ -178,7 +178,7 @@
             color: #00b0ff;
         }
         
-        #image-preview, #cdn-preview {
+        #image-preview {
             max-width: 100%;
             border: 2px solid #0f6b5a;
             border-radius: 5px;
@@ -391,12 +391,22 @@
             display: block;
         }
         
-        .cdn-result {
+        .cdn-results {
             margin-top: 20px;
+        }
+        
+        .cdn-result {
             padding: 15px;
             background: #1a2a1a;
             border-radius: 5px;
             border: 1px solid #0f6b5a;
+            margin-bottom: 15px;
+        }
+        
+        .cdn-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #00b0ff;
         }
         
         .cdn-url {
@@ -406,11 +416,90 @@
             padding: 10px;
             background: #111;
             border-radius: 3px;
+            border-left: 3px solid #6c5ce7;
+        }
+        
+        .short-url {
+            color: #00b0ff;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0f6b5a, #00b0ff);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .server-status {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        
+        .server-status.success {
+            background: rgba(15, 107, 90, 0.2);
+            color: #0f6b5a;
+        }
+        
+        .server-status.error {
+            background: rgba(176, 0, 32, 0.2);
+            color: #b00020;
+        }
+        
+        .server-status.pending {
+            background: rgba(108, 92, 231, 0.2);
+            color: #6c5ce7;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .success .status-dot { background: #0f6b5a; }
+        .error .status-dot { background: #b00020; }
+        .pending .status-dot { background: #6c5ce7; animation: pulse 1.5s infinite; }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .copy-btn {
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .copy-btn:hover {
+            background: #5649c0;
         }
     </style>
 </head>
 <body>
-    <h1>API Upload SMS ke CDN - Pak Eko</h1>
+    <h1>API Upload SMS ke Multiple CDN - Pak Eko</h1>
     
     <div class="container">
         <div class="phone-container">
@@ -483,8 +572,8 @@ orang seenaknya
             <div class="tab-container">
                 <div class="tabs">
                     <div class="tab active" data-tab="customize">Kustomisasi</div>
-                    <div class="tab" data-tab="api">API & Upload</div>
-                    <div class="tab" data-tab="preview">Hasil CDN</div>
+                    <div class="tab" data-tab="upload">Upload ke CDN</div>
+                    <div class="tab" data-tab="api">API Documentation</div>
                 </div>
                 
                 <div class="tab-content active" id="customize-tab">
@@ -515,8 +604,8 @@ orang seenaknya</textarea>
                     <button id="reset-btn" class="secondary">Reset ke Default</button>
                 </div>
                 
-                <div class="tab-content" id="api-tab">
-                    <h2>API & Upload ke CDN</h2>
+                <div class="tab-content" id="upload-tab">
+                    <h2>Upload ke Multiple CDN</h2>
                     
                     <div class="form-group">
                         <label for="format">Format Gambar:</label>
@@ -532,87 +621,63 @@ orang seenaknya</textarea>
                     </div>
                     
                     <button id="preview-btn">Pratinjau Gambar</button>
-                    <button id="upload-btn" class="tertiary">Upload ke CDN</button>
+                    <button id="upload-btn" class="tertiary">Upload ke Semua CDN</button>
                     
-                    <div class="response-container">
-                        <div class="response-title">Request cURL:</div>
-                        <div class="response-content" id="curl-request">
-                            // cURL command akan muncul di sini
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    
+                    <div id="server-status">
+                        <div class="server-status pending">
+                            <div class="status-dot"></div>
+                            <span>Menunggu upload...</span>
                         </div>
+                    </div>
+                    
+                    <div class="cdn-results" id="cdn-results" style="display: none;">
+                        <h3>📊 Hasil Upload</h3>
+                        <!-- Results will be populated here -->
                     </div>
                 </div>
                 
-                <div class="tab-content" id="preview-tab">
-                    <h2>Hasil Upload CDN</h2>
+                <div class="tab-content" id="api-tab">
+                    <h2>API Documentation</h2>
                     
-                    <div class="cdn-result" id="cdn-result" style="display: none;">
-                        <div class="response-title">✅ Upload Berhasil!</div>
-                        <div>URL CDN:</div>
-                        <div class="cdn-url" id="cdn-url"></div>
-                        
-                        <div class="preview-container">
-                            <div class="preview-title">Pratinjau dari CDN:</div>
-                            <img id="cdn-preview" src="" alt="Pratinjau dari CDN">
+                    <div class="response-container">
+                        <div class="response-title">📋 Contoh cURL Request:</div>
+                        <div class="response-content" id="curl-request">
+// Upload ke CDN API
+curl -X POST "https://your-api.com/api/upload-sms" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sender": "Pak Eko",
+    "message": "Kita ga enakan, orang seenaknya",
+    "date": "08/07/2025",
+    "time": "14:55",
+    "format": "png"
+  }'
                         </div>
                     </div>
                     
-                    <div id="status-message" class="status"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="instructions">
-        <h3>Contoh Penggunaan API Upload ke CDN:</h3>
-        
-        <h4>1. Upload dari Base64 (POST Request)</h4>
-        <div class="code-block">
-// JavaScript Fetch API
-const response = await fetch('https://your-api.com/api/upload', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-        image: 'base64-encoded-image-data',
-        filename: 'sms-pak-eko.png'
-    })
-});
-
-const result = await response.json();
-console.log(result);
-        </div>
-
-        <h4>2. Upload dari URL (POST Request)</h4>
-        <div class="code-block">
-// cURL Command
-curl -X POST "https://your-api.com/api/upload" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "url": "https://example.com/sms-image.png"
-  }'
-        </div>
-
-        <h4>3. Response JSON yang Dihasilkan:</h4>
-        <div class="code-block">
+                    <div class="response-container">
+                        <div class="response-title">📤 Response Success:</div>
+                        <div class="response-content">
 {
   "success": true,
   "data": {
-    "cdnUrl": "https://uguu.se/abc123_sms.png",
-    "filename": "sms-pak-eko.png",
-    "size": 24567,
-    "message": "Gambar berhasil diupload ke CDN"
+    "cdnUrls": {
+      "tmpfiles": "https://tmpfiles.org/dl/abc123_sms.png",
+      "telegraph": "https://telegra.ph/file/abc123.png",
+      "fileio": "https://file.io/abc123"
+    },
+    "fileSize": "24.56 KB",
+    "message": "Upload berhasil ke 3 server CDN"
   }
 }
-        </div>
-
-        <h4>4. Response Error:</h4>
-        <div class="code-block">
-{
-  "success": false,
-  "error": "Gagal upload gambar ke CDN",
-  "details": "Error message details"
-}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -636,11 +701,9 @@ curl -X POST "https://your-api.com/api/upload" \
             const messageContent = document.getElementById('message-content');
             const messageDate = document.getElementById('message-date');
             const smsMockup = document.getElementById('sms-mockup');
-            const statusMessage = document.getElementById('status-message');
-            const curlRequest = document.getElementById('curl-request');
-            const cdnResult = document.getElementById('cdn-result');
-            const cdnUrl = document.getElementById('cdn-url');
-            const cdnPreview = document.getElementById('cdn-preview');
+            const progressFill = document.getElementById('progress-fill');
+            const serverStatus = document.getElementById('server-status');
+            const cdnResults = document.getElementById('cdn-results');
             
             // Tab functionality
             const tabs = document.querySelectorAll('.tab');
@@ -650,11 +713,9 @@ curl -X POST "https://your-api.com/api/upload" \
                 tab.addEventListener('click', () => {
                     const tabId = tab.getAttribute('data-tab');
                     
-                    // Remove active class from all tabs and contents
                     tabs.forEach(t => t.classList.remove('active'));
                     tabContents.forEach(c => c.classList.remove('active'));
                     
-                    // Add active class to current tab and content
                     tab.classList.add('active');
                     document.getElementById(`${tabId}-tab`).classList.add('active');
                 });
@@ -670,24 +731,18 @@ curl -X POST "https://your-api.com/api/upload" \
                 clearStatus();
             }
             
-            // Fungsi untuk membersihkan pesan status
+            // Fungsi untuk membersihkan status
             function clearStatus() {
-                statusMessage.textContent = '';
-                statusMessage.className = 'status';
-            }
-            
-            // Fungsi untuk menampilkan pesan status
-            function showStatus(message, isError = false) {
-                statusMessage.textContent = message;
-                statusMessage.className = isError ? 'status error' : 'status success';
+                serverStatus.innerHTML = '<div class="server-status pending"><div class="status-dot"></div><span>Menunggu upload...</span></div>';
+                progressFill.style.width = '0%';
+                cdnResults.style.display = 'none';
             }
             
             // Fungsi untuk mengonversi SMS ke gambar
-            function convertToImage(callback) {
+            function convertToImage() {
                 const format = formatSelect.value;
                 const quality = format === 'jpeg' ? parseFloat(qualityInput.value) : 1.0;
                 
-                // Opsi untuk html2canvas
                 const options = {
                     scale: 2,
                     useCORS: true,
@@ -697,63 +752,202 @@ curl -X POST "https://your-api.com/api/upload" \
                 
                 return new Promise((resolve, reject) => {
                     html2canvas(smsMockup, options).then(function(canvas) {
-                        const imageData = canvas.toDataURL(`image/${format}`, quality);
-                        resolve(imageData);
+                        canvas.toBlob(function(blob) {
+                            resolve(blob);
+                        }, `image/${format}`, quality);
                     }).catch(function(error) {
                         reject(error);
                     });
                 });
             }
             
-            // Fungsi untuk mengupload ke CDN (simulasi)
-            async function uploadToCDN(imageData, filename) {
-                showStatus('Mengupload gambar ke CDN...');
-                
-                // Simulasi upload delay
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                // Extract base64 data dari data URL
-                const base64Data = imageData.split(',')[1];
+            // Fungsi untuk upload ke tmpfiles.org (CDN nyata)
+            async function uploadToTmpFiles(blob) {
+                const formData = new FormData();
+                const filename = `sms-${Date.now()}.${formatSelect.value}`;
+                formData.append('file', blob, filename);
                 
                 try {
-                    // Simulasi API call ke backend
-                    const response = await fetch('/api/upload', {
+                    const response = await fetch('https://tmpfiles.org/api/v1/upload', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            image: base64Data,
-                            filename: filename || `sms-${Date.now()}.${formatSelect.value}`
-                        })
+                        body: formData
                     });
                     
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        return result.data.cdnUrl;
-                    } else {
-                        throw new Error(result.error);
+                    const data = await response.json();
+                    if (data.success) {
+                        // Extract download link from tmpfiles.org response
+                        const match = data.data.url.match(/https:\/\/tmpfiles\.org\/(.*)/);
+                        if (match) {
+                            return `https://tmpfiles.org/dl/${match[1]}`;
+                        }
                     }
+                    throw new Error('Upload failed');
                 } catch (error) {
-                    // Fallback: generate fake CDN URL untuk demo
-                    const fakeCdnUrl = `https://uguu.se/${Math.random().toString(36).substring(2)}_sms.${formatSelect.value}`;
-                    return fakeCdnUrl;
+                    throw new Error(`tmpfiles.org: ${error.message}`);
                 }
             }
             
-            // Fungsi untuk generate cURL command
-            function generateCurlCommand(imageData) {
-                const base64Data = imageData.split(',')[1];
-                const filename = `sms-${senderInput.value.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}.${formatSelect.value}`;
+            // Fungsi untuk upload ke file.io (CDN nyata)
+            async function uploadToFileIO(blob) {
+                const formData = new FormData();
+                const filename = `sms-${Date.now()}.${formatSelect.value}`;
+                formData.append('file', blob, filename);
                 
-                return `curl -X POST "https://your-api.com/api/upload" \\\n  -H "Content-Type: application/json" \\\n  -d '{\n    "image": "${base64Data.substring(0, 100)}...",\n    "filename": "${filename}"\n  }'`;
+                try {
+                    const response = await fetch('https://file.io', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        return data.link;
+                    }
+                    throw new Error('Upload failed');
+                } catch (error) {
+                    throw new Error(`file.io: ${error.message}`);
+                }
             }
             
-            // Event listener untuk tombol update
+            // Fungsi untuk upload ke telegraph (CDN nyata)
+            async function uploadToTelegraph(blob) {
+                const formData = new FormData();
+                const filename = `sms-${Date.now()}.${formatSelect.value}`;
+                formData.append('file', blob, filename);
+                
+                try {
+                    const response = await fetch('https://telegra.ph/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    if (data[0] && data[0].src) {
+                        return `https://telegra.ph${data[0].src}`;
+                    }
+                    throw new Error('Upload failed');
+                } catch (error) {
+                    throw new Error(`telegraph: ${error.message}`);
+                }
+            }
+            
+            // Fungsi untuk mengupload ke semua CDN
+            async function uploadToAllCDNs(imageBlob) {
+                const servers = [
+                    { 
+                        name: 'tmpfiles.org', 
+                        uploadFn: uploadToTmpFiles,
+                        description: 'Permanen, no expiry'
+                    },
+                    { 
+                        name: 'file.io', 
+                        uploadFn: uploadToFileIO,
+                        description: '14 days expiry'
+                    },
+                    { 
+                        name: 'telegra.ph', 
+                        uploadFn: uploadToTelegraph,
+                        description: 'Permanen, Telegram CDN'
+                    }
+                ];
+                
+                const results = [];
+                serverStatus.innerHTML = '';
+                
+                for (let i = 0; i < servers.length; i++) {
+                    const server = servers[i];
+                    const progress = ((i + 1) / servers.length) * 100;
+                    
+                    // Update progress
+                    progressFill.style.width = `${progress}%`;
+                    updateServerStatus(server.name, 'pending', `Mengupload ke ${server.name}...`);
+                    
+                    try {
+                        const url = await server.uploadFn(imageBlob);
+                        
+                        results.push({
+                            server: server.name,
+                            status: 'success',
+                            url: url,
+                            description: server.description,
+                            message: 'Upload berhasil'
+                        });
+                        
+                        updateServerStatus(server.name, 'success', `✅ Berhasil: ${url.substring(0, 50)}...`);
+                        
+                    } catch (error) {
+                        results.push({
+                            server: server.name,
+                            status: 'error',
+                            url: null,
+                            description: server.description,
+                            message: error.message
+                        });
+                        
+                        updateServerStatus(server.name, 'error', `❌ Gagal: ${error.message}`);
+                    }
+                    
+                    // Delay antara upload
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+                
+                return results;
+            }
+            
+            // Fungsi untuk update status server
+            function updateServerStatus(serverName, status, message) {
+                const statusElement = document.createElement('div');
+                statusElement.className = `server-status ${status}`;
+                statusElement.innerHTML = `
+                    <div class="status-dot"></div>
+                    <span><strong>${serverName}:</strong> ${message}</span>
+                `;
+                
+                serverStatus.appendChild(statusElement);
+            }
+            
+            // Fungsi untuk menampilkan hasil
+            function displayResults(results) {
+                cdnResults.innerHTML = '<h3>📊 Hasil Upload ke CDN</h3>';
+                
+                results.forEach(result => {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'cdn-result';
+                    
+                    const statusIcon = result.status === 'success' ? '✅' : '❌';
+                    
+                    resultDiv.innerHTML = `
+                        <div class="cdn-title">
+                            ${statusIcon} ${result.server}
+                            <span style="font-size: 12px; color: #6b7680; margin-left: 10px;">${result.description}</span>
+                        </div>
+                        ${result.url ? `
+                            <div class="cdn-url">
+                                ${result.url}
+                                <button class="copy-btn" onclick="copyToClipboard('${result.url}')">Salin</button>
+                            </div>
+                        ` : ''}
+                        <div style="margin-top: 5px; font-size: 14px; color: ${result.status === 'success' ? '#0f6b5a' : '#b00020'}">
+                            ${result.message}
+                        </div>
+                    `;
+                    
+                    cdnResults.appendChild(resultDiv);
+                });
+                
+                cdnResults.style.display = 'block';
+            }
+            
+            // Fungsi copy to clipboard
+            window.copyToClipboard = function(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('URL berhasil disalin!');
+                });
+            };
+            
+            // Event listeners
             updateBtn.addEventListener('click', updateSMSDisplay);
             
-            // Event listener untuk tombol reset
             resetBtn.addEventListener('click', function() {
                 senderInput.value = "Pak Eko";
                 messageInput.value = "Kita ga enakan,\norang seenaknya";
@@ -762,66 +956,113 @@ curl -X POST "https://your-api.com/api/upload" \
                 formatSelect.value = "png";
                 qualityInput.value = "0.9";
                 updateSMSDisplay();
-                showStatus('SMS telah direset ke nilai default.');
             });
             
-            // Event listener untuk tombol pratinjau
             previewBtn.addEventListener('click', async function() {
-                showStatus('Membuat pratinjau gambar...');
-                
                 try {
-                    const imageData = await convertToImage();
-                    const img = new Image();
-                    img.src = imageData;
+                    const imageBlob = await convertToImage();
+                    const imageUrl = URL.createObjectURL(imageBlob);
                     
-                    // Update cURL command
-                    curlRequest.textContent = generateCurlCommand(imageData);
+                    // Switch to upload tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    document.querySelector('[data-tab="upload"]').classList.add('active');
+                    document.getElementById('upload-tab').classList.add('active');
                     
-                    showStatus('Pratinjau berhasil dibuat! Lihat tab "Hasil CDN" untuk upload.');
                 } catch (error) {
-                    showStatus('Gagal membuat pratinjau: ' + error.message, true);
+                    alert('Gagal membuat pratinjau: ' + error.message);
                 }
             });
             
-            // Event listener untuk tombol upload
             uploadBtn.addEventListener('click', async function() {
-                showStatus('Memproses gambar...');
+                clearStatus();
                 
                 try {
                     // Convert to image
-                    const imageData = await convertToImage();
+                    const imageBlob = await convertToImage();
                     
-                    // Upload to CDN
-                    const filename = `sms-${senderInput.value.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}.${formatSelect.value}`;
-                    const cdnImageUrl = await uploadToCDN(imageData, filename);
+                    // Upload to CDNs
+                    const results = await uploadToAllCDNs(imageBlob);
                     
-                    // Show result
-                    cdnUrl.textContent = cdnImageUrl;
-                    cdnPreview.src = cdnImageUrl;
-                    cdnResult.style.display = 'block';
-                    
-                    // Switch to preview tab
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    document.querySelector('[data-tab="preview"]').classList.add('active');
-                    document.getElementById('preview-tab').classList.add('active');
-                    
-                    showStatus('✅ Gambar berhasil diupload ke CDN!');
+                    // Display results
+                    displayResults(results);
                     
                 } catch (error) {
-                    showStatus('Gagal upload ke CDN: ' + error.message, true);
+                    updateServerStatus('System', 'error', `❌ Error: ${error.message}`);
                 }
             });
             
-            // Event listener untuk perubahan format
+            // Inisialisasi
+            updateSMSDisplay();
+            qualityInput.disabled = formatSelect.value !== 'jpeg';
+            
             formatSelect.addEventListener('change', function() {
                 qualityInput.disabled = formatSelect.value !== 'jpeg';
             });
-            
-            // Inisialisasi tampilan
-            updateSMSDisplay();
-            qualityInput.disabled = formatSelect.value !== 'jpeg';
         });
     </script>
+    
+    <div class="instructions">
+        <h3>📋 CDN yang Digunakan (URL Asli):</h3>
+        
+        <div class="code-block">
+✅ tmpfiles.org - https://tmpfiles.org/
+• Permanen, no expiry date
+• Support berbagai format file
+• API langsung tersedia
+
+✅ file.io - https://file.io/  
+• Expiry: 14 hari
+• Simple API, mudah digunakan
+• Support sharing file
+
+✅ telegra.ph - https://telegra.ph/
+• Permanen, milik Telegram
+• Khusus untuk images/text
+• Cepat dan reliable
+        </div>
+        
+        <h3>🚀 Contoh API Backend (Node.js):</h3>
+        <div class="code-block">
+// API endpoint untuk upload SMS
+app.post('/api/upload-sms', async (req, res) => {
+    const { sender, message, date, time, format } = req.body;
+    
+    try {
+        // Generate SMS image
+        const imageBuffer = await generateSMSImage({ sender, message, date, time, format });
+        
+        // Upload ke multiple CDN
+        const results = await Promise.allSettled([
+            uploadToTmpFiles(imageBuffer),
+            uploadToFileIO(imageBuffer),
+            uploadToTelegraph(imageBuffer)
+        ]);
+        
+        const cdnUrls = {};
+        results.forEach((result, index) => {
+            if (result.status === 'fulfilled') {
+                cdnUrls[['tmpfiles', 'fileio', 'telegraph'][index]] = result.value;
+            }
+        });
+        
+        res.json({
+            success: true,
+            data: {
+                cdnUrls,
+                fileSize: formatBytes(imageBuffer.length),
+                message: `Upload berhasil ke ${Object.keys(cdnUrls).length} server`
+            }
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+        </div>
+    </div>
 </body>
 </html>
