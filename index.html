@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Upload SMS ke CDN - Pak Eko</title>
+    <title>API Upload SMS ke CDN Branpedia - Pak Eko</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         :root {
@@ -167,22 +167,147 @@
             overflow-y: auto;
         }
         
-        .preview-container {
+        .cdn-results {
             margin-top: 20px;
-            text-align: center;
         }
         
-        .preview-title {
+        .cdn-result {
+            padding: 15px;
+            background: #1a2a1a;
+            border-radius: 5px;
+            border: 1px solid #0f6b5a;
+            margin-bottom: 15px;
+        }
+        
+        .cdn-title {
             font-weight: bold;
             margin-bottom: 10px;
             color: #00b0ff;
         }
         
-        #image-preview {
-            max-width: 100%;
-            border: 2px solid #0f6b5a;
-            border-radius: 5px;
-            margin-top: 10px;
+        .cdn-url {
+            word-break: break-all;
+            font-family: monospace;
+            margin: 10px 0;
+            padding: 10px;
+            background: #111;
+            border-radius: 3px;
+            border-left: 3px solid #6c5ce7;
+        }
+        
+        .short-url {
+            color: #00b0ff;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0f6b5a, #00b0ff);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .server-status {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        
+        .server-status.success {
+            background: rgba(15, 107, 90, 0.2);
+            color: #0f6b5a;
+        }
+        
+        .server-status.error {
+            background: rgba(176, 0, 32, 0.2);
+            color: #b00020;
+        }
+        
+        .server-status.pending {
+            background: rgba(108, 92, 231, 0.2);
+            color: #6c5ce7;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .success .status-dot { background: #0f6b5a; }
+        .error .status-dot { background: #b00020; }
+        .pending .status-dot { background: #6c5ce7; animation: pulse 1.5s infinite; }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .copy-btn {
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .copy-btn:hover {
+            background: #5649c0;
+        }
+        
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #333;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #222;
+            border: 1px solid #333;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        
+        .tab.active {
+            background: #0f6b5a;
+            border-color: #0f6b5a;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: #222;
+            border: 1px solid #333;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .tab-content.active {
+            display: block;
         }
         
         .phone {
@@ -304,202 +429,10 @@
             font-weight: 700;
             font-size: 20px;
         }
-        
-        .instructions {
-            margin-top: 30px;
-            background: #1a1a1a;
-            padding: 20px;
-            border-radius: 10px;
-            width: 100%;
-        }
-        
-        .instructions h3 {
-            color: #6c5ce7;
-            margin-bottom: 15px;
-        }
-        
-        .instructions ol {
-            padding-left: 20px;
-            margin-bottom: 15px;
-        }
-        
-        .instructions li {
-            margin-bottom: 8px;
-        }
-        
-        .code-block {
-            background: #222;
-            padding: 12px;
-            border-radius: 5px;
-            font-family: monospace;
-            margin: 10px 0;
-            border-left: 3px solid #0f6b5a;
-        }
-        
-        .status {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-            font-weight: bold;
-        }
-        
-        .status.success {
-            background: #0f6b5a;
-            color: white;
-        }
-        
-        .status.error {
-            background: #b00020;
-            color: white;
-        }
-        
-        .tab-container {
-            margin-bottom: 20px;
-        }
-        
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid #333;
-        }
-        
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background: #222;
-            border: 1px solid #333;
-            border-bottom: none;
-            border-radius: 5px 5px 0 0;
-            margin-right: 5px;
-        }
-        
-        .tab.active {
-            background: #0f6b5a;
-            border-color: #0f6b5a;
-        }
-        
-        .tab-content {
-            display: none;
-            padding: 20px;
-            background: #222;
-            border: 1px solid #333;
-            border-top: none;
-            border-radius: 0 0 5px 5px;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .cdn-results {
-            margin-top: 20px;
-        }
-        
-        .cdn-result {
-            padding: 15px;
-            background: #1a2a1a;
-            border-radius: 5px;
-            border: 1px solid #0f6b5a;
-            margin-bottom: 15px;
-        }
-        
-        .cdn-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #00b0ff;
-        }
-        
-        .cdn-url {
-            word-break: break-all;
-            font-family: monospace;
-            margin: 10px 0;
-            padding: 10px;
-            background: #111;
-            border-radius: 3px;
-            border-left: 3px solid #6c5ce7;
-        }
-        
-        .short-url {
-            color: #00b0ff;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: #333;
-            border-radius: 10px;
-            margin: 10px 0;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #0f6b5a, #00b0ff);
-            border-radius: 10px;
-            transition: width 0.3s ease;
-            width: 0%;
-        }
-        
-        .server-status {
-            display: flex;
-            align-items: center;
-            margin: 5px 0;
-            padding: 5px;
-            border-radius: 3px;
-        }
-        
-        .server-status.success {
-            background: rgba(15, 107, 90, 0.2);
-            color: #0f6b5a;
-        }
-        
-        .server-status.error {
-            background: rgba(176, 0, 32, 0.2);
-            color: #b00020;
-        }
-        
-        .server-status.pending {
-            background: rgba(108, 92, 231, 0.2);
-            color: #6c5ce7;
-        }
-        
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        
-        .success .status-dot { background: #0f6b5a; }
-        .error .status-dot { background: #b00020; }
-        .pending .status-dot { background: #6c5ce7; animation: pulse 1.5s infinite; }
-        
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        
-        .copy-btn {
-            background: #6c5ce7;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-left: 10px;
-        }
-        
-        .copy-btn:hover {
-            background: #5649c0;
-        }
     </style>
 </head>
 <body>
-    <h1>API Upload SMS ke Multiple CDN - Pak Eko</h1>
+    <h1>API Upload SMS ke CDN Branpedia - Pak Eko</h1>
     
     <div class="container">
         <div class="phone-container">
@@ -509,14 +442,12 @@
                         <!-- HEADER -->
                         <div class="header">
                             <div class="left">
-                                <!-- signal -->
                                 <svg class="icon-svg" viewBox="0 0 24 24">
                                     <rect x="2" y="16" width="2" height="6" fill="var(--icon-main)"/>
                                     <rect x="6" y="12" width="2" height="10" fill="var(--icon-main)"/>
                                     <rect x="10" y="8" width="2" height="14" fill="var(--icon-alt)"/>
                                     <rect x="14" y="4" width="2" height="18" fill="var(--icon-alt)"/>
                                 </svg>
-                                <!-- sms -->
                                 <svg class="icon-svg" viewBox="0 0 24 24">
                                     <rect x="2" y="6" width="20" height="12" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
                                     <polyline points="2,6 12,13 22,6" stroke="var(--icon-alt)" stroke-width="2" fill="none"/>
@@ -524,13 +455,11 @@
                             </div>
                             <div class="title" id="sender-name">Pak Eko</div>
                             <div class="right">
-                                <!-- alarm -->
                                 <svg class="icon-svg" viewBox="0 0 24 24">
                                     <circle cx="12" cy="13" r="6" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
                                     <line x1="12" y1="13" x2="12" y2="9" stroke="var(--icon-alt)" stroke-width="2"/>
                                     <line x1="12" y1="13" x2="15" y2="13" stroke="var(--icon-alt)" stroke-width="2"/>
                                 </svg>
-                                <!-- vibrate -->
                                 <svg class="icon-svg" viewBox="0 0 24 24">
                                     <rect x="8" y="6" width="8" height="12" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
                                     <line x1="2" y1="8" x2="5" y2="10" stroke="var(--icon-alt)" stroke-width="2"/>
@@ -538,7 +467,6 @@
                                     <line x1="22" y1="8" x2="19" y2="10" stroke="var(--icon-alt)" stroke-width="2"/>
                                     <line x1="22" y1="14" x2="19" y2="12" stroke="var(--icon-alt)" stroke-width="2"/>
                                 </svg>
-                                <!-- battery -->
                                 <svg class="icon-svg" viewBox="0 0 26 14">
                                     <rect x="1" y="3" width="20" height="8" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
                                     <rect x="22" y="5" width="3" height="4" fill="var(--icon-main)"/>
@@ -605,7 +533,7 @@ orang seenaknya</textarea>
                 </div>
                 
                 <div class="tab-content" id="upload-tab">
-                    <h2>Upload ke Multiple CDN</h2>
+                    <h2>Upload ke CDN Branpedia</h2>
                     
                     <div class="form-group">
                         <label for="format">Format Gambar:</label>
@@ -620,8 +548,7 @@ orang seenaknya</textarea>
                         <input type="number" id="quality" min="0" max="1" step="0.1" value="0.9">
                     </div>
                     
-                    <button id="preview-btn">Pratinjau Gambar</button>
-                    <button id="upload-btn" class="tertiary">Upload ke Semua CDN</button>
+                    <button id="upload-btn" class="tertiary">📤 Upload ke Semua CDN</button>
                     
                     <div class="progress-bar">
                         <div class="progress-fill" id="progress-fill"></div>
@@ -635,8 +562,7 @@ orang seenaknya</textarea>
                     </div>
                     
                     <div class="cdn-results" id="cdn-results" style="display: none;">
-                        <h3>📊 Hasil Upload</h3>
-                        <!-- Results will be populated here -->
+                        <h3>📊 Hasil Upload CDN</h3>
                     </div>
                 </div>
                 
@@ -645,8 +571,8 @@ orang seenaknya</textarea>
                     
                     <div class="response-container">
                         <div class="response-title">📋 Contoh cURL Request:</div>
-                        <div class="response-content" id="curl-request">
-// Upload ke CDN API
+                        <div class="response-content">
+// Upload ke API Branpedia
 curl -X POST "https://your-api.com/api/upload-sms" \
   -H "Content-Type: application/json" \
   -d '{
@@ -666,9 +592,13 @@ curl -X POST "https://your-api.com/api/upload-sms" \
   "success": true,
   "data": {
     "cdnUrls": {
-      "tmpfiles": "https://tmpfiles.org/dl/abc123_sms.png",
-      "telegraph": "https://telegra.ph/file/abc123.png",
-      "fileio": "https://file.io/abc123"
+      "catbox": "https://files.catbox.moe/abc123.png",
+      "quax": "https://qu.ax/abc123.png", 
+      "tmpfiles": "https://tmpfiles.org/dl/abc123"
+    },
+    "shortUrls": {
+      "catbox": "https://tinyurl.com/xyz789",
+      "quax": "https://tinyurl.com/abc456"
     },
     "fileSize": "24.56 KB",
     "message": "Upload berhasil ke 3 server CDN"
@@ -680,7 +610,7 @@ curl -X POST "https://your-api.com/api/upload-sms" \
             </div>
         </div>
     </div>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Elemen form
@@ -691,7 +621,6 @@ curl -X POST "https://your-api.com/api/upload-sms" \
             const updateBtn = document.getElementById('update-btn');
             const resetBtn = document.getElementById('reset-btn');
             const uploadBtn = document.getElementById('upload-btn');
-            const previewBtn = document.getElementById('preview-btn');
             const formatSelect = document.getElementById('format');
             const qualityInput = document.getElementById('quality');
             
@@ -727,7 +656,6 @@ curl -X POST "https://your-api.com/api/upload-sms" \
                 fromName.textContent = senderInput.value;
                 messageContent.textContent = messageInput.value;
                 messageDate.innerHTML = `${dateInput.value}<br>${timeInput.value}`;
-                
                 clearStatus();
             }
             
@@ -755,13 +683,56 @@ curl -X POST "https://your-api.com/api/upload-sms" \
                         canvas.toBlob(function(blob) {
                             resolve(blob);
                         }, `image/${format}`, quality);
-                    }).catch(function(error) {
-                        reject(error);
-                    });
+                    }).catch(reject);
                 });
             }
             
-            // Fungsi untuk upload ke tmpfiles.org (CDN nyata)
+            // Fungsi untuk upload ke Catbox.moe
+            async function uploadToCatbox(blob) {
+                const formData = new FormData();
+                const filename = `sms-${Date.now()}.${formatSelect.value}`;
+                formData.append('reqtype', 'fileupload');
+                formData.append('fileToUpload', blob, filename);
+                
+                try {
+                    const response = await fetch('https://catbox.moe/user/api.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.text();
+                    if (result && result.startsWith('http')) {
+                        return result;
+                    }
+                    throw new Error('Upload failed');
+                } catch (error) {
+                    throw new Error(`Catbox: ${error.message}`);
+                }
+            }
+            
+            // Fungsi untuk upload ke Qu.ax
+            async function uploadToQuax(blob) {
+                const formData = new FormData();
+                const filename = `sms-${Date.now()}.${formatSelect.value}`;
+                formData.append('files[]', blob, filename);
+                
+                try {
+                    const response = await fetch('https://qu.ax/upload.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    if (data.files && data.files[0] && data.files[0].url) {
+                        return data.files[0].url;
+                    }
+                    throw new Error('Upload failed');
+                } catch (error) {
+                    throw new Error(`Qu.ax: ${error.message}`);
+                }
+            }
+            
+            // Fungsi untuk upload ke TmpFiles
             async function uploadToTmpFiles(blob) {
                 const formData = new FormData();
                 const filename = `sms-${Date.now()}.${formatSelect.value}`;
@@ -774,8 +745,7 @@ curl -X POST "https://your-api.com/api/upload-sms" \
                     });
                     
                     const data = await response.json();
-                    if (data.success) {
-                        // Extract download link from tmpfiles.org response
+                    if (data.success && data.data && data.data.url) {
                         const match = data.data.url.match(/https:\/\/tmpfiles\.org\/(.*)/);
                         if (match) {
                             return `https://tmpfiles.org/dl/${match[1]}`;
@@ -783,51 +753,17 @@ curl -X POST "https://your-api.com/api/upload-sms" \
                     }
                     throw new Error('Upload failed');
                 } catch (error) {
-                    throw new Error(`tmpfiles.org: ${error.message}`);
+                    throw new Error(`TmpFiles: ${error.message}`);
                 }
             }
             
-            // Fungsi untuk upload ke file.io (CDN nyata)
-            async function uploadToFileIO(blob) {
-                const formData = new FormData();
-                const filename = `sms-${Date.now()}.${formatSelect.value}`;
-                formData.append('file', blob, filename);
-                
+            // Fungsi untuk short URL
+            async function shortenUrl(longUrl) {
                 try {
-                    const response = await fetch('https://file.io', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    const data = await response.json();
-                    if (data.success) {
-                        return data.link;
-                    }
-                    throw new Error('Upload failed');
-                } catch (error) {
-                    throw new Error(`file.io: ${error.message}`);
-                }
-            }
-            
-            // Fungsi untuk upload ke telegraph (CDN nyata)
-            async function uploadToTelegraph(blob) {
-                const formData = new FormData();
-                const filename = `sms-${Date.now()}.${formatSelect.value}`;
-                formData.append('file', blob, filename);
-                
-                try {
-                    const response = await fetch('https://telegra.ph/upload', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    const data = await response.json();
-                    if (data[0] && data[0].src) {
-                        return `https://telegra.ph${data[0].src}`;
-                    }
-                    throw new Error('Upload failed');
-                } catch (error) {
-                    throw new Error(`telegraph: ${error.message}`);
+                    const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
+                    return await response.text();
+                } catch {
+                    return longUrl;
                 }
             }
             
@@ -835,19 +771,19 @@ curl -X POST "https://your-api.com/api/upload-sms" \
             async function uploadToAllCDNs(imageBlob) {
                 const servers = [
                     { 
-                        name: 'tmpfiles.org', 
-                        uploadFn: uploadToTmpFiles,
+                        name: 'Catbox.moe', 
+                        uploadFn: uploadToCatbox,
                         description: 'Permanen, no expiry'
                     },
                     { 
-                        name: 'file.io', 
-                        uploadFn: uploadToFileIO,
-                        description: '14 days expiry'
+                        name: 'Qu.ax', 
+                        uploadFn: uploadToQuax,
+                        description: 'File hosting'
                     },
                     { 
-                        name: 'telegra.ph', 
-                        uploadFn: uploadToTelegraph,
-                        description: 'Permanen, Telegram CDN'
+                        name: 'TmpFiles.org', 
+                        uploadFn: uploadToTmpFiles,
+                        description: 'Temporary storage'
                     }
                 ];
                 
@@ -858,28 +794,30 @@ curl -X POST "https://your-api.com/api/upload-sms" \
                     const server = servers[i];
                     const progress = ((i + 1) / servers.length) * 100;
                     
-                    // Update progress
                     progressFill.style.width = `${progress}%`;
                     updateServerStatus(server.name, 'pending', `Mengupload ke ${server.name}...`);
                     
                     try {
                         const url = await server.uploadFn(imageBlob);
+                        const shortUrl = await shortenUrl(url);
                         
                         results.push({
                             server: server.name,
                             status: 'success',
                             url: url,
+                            shortUrl: shortUrl,
                             description: server.description,
                             message: 'Upload berhasil'
                         });
                         
-                        updateServerStatus(server.name, 'success', `✅ Berhasil: ${url.substring(0, 50)}...`);
+                        updateServerStatus(server.name, 'success', `✅ Berhasil: ${shortUrl}`);
                         
                     } catch (error) {
                         results.push({
                             server: server.name,
                             status: 'error',
                             url: null,
+                            shortUrl: null,
                             description: server.description,
                             message: error.message
                         });
@@ -887,7 +825,6 @@ curl -X POST "https://your-api.com/api/upload-sms" \
                         updateServerStatus(server.name, 'error', `❌ Gagal: ${error.message}`);
                     }
                     
-                    // Delay antara upload
                     await new Promise(resolve => setTimeout(resolve, 1000));
                 }
                 
@@ -902,13 +839,12 @@ curl -X POST "https://your-api.com/api/upload-sms" \
                     <div class="status-dot"></div>
                     <span><strong>${serverName}:</strong> ${message}</span>
                 `;
-                
                 serverStatus.appendChild(statusElement);
             }
             
             // Fungsi untuk menampilkan hasil
             function displayResults(results) {
-                cdnResults.innerHTML = '<h3>📊 Hasil Upload ke CDN</h3>';
+                cdnResults.innerHTML = '<h3>📊 Hasil Upload CDN Branpedia</h3>';
                 
                 results.forEach(result => {
                     const resultDiv = document.createElement('div');
@@ -926,6 +862,7 @@ curl -X POST "https://your-api.com/api/upload-sms" \
                                 ${result.url}
                                 <button class="copy-btn" onclick="copyToClipboard('${result.url}')">Salin</button>
                             </div>
+                            <div class="short-url">🔗 Short URL: ${result.shortUrl}</div>
                         ` : ''}
                         <div style="margin-top: 5px; font-size: 14px; color: ${result.status === 'success' ? '#0f6b5a' : '#b00020'}">
                             ${result.message}
@@ -958,33 +895,12 @@ curl -X POST "https://your-api.com/api/upload-sms" \
                 updateSMSDisplay();
             });
             
-            previewBtn.addEventListener('click', async function() {
-                try {
-                    const imageBlob = await convertToImage();
-                    const imageUrl = URL.createObjectURL(imageBlob);
-                    
-                    // Switch to upload tab
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    document.querySelector('[data-tab="upload"]').classList.add('active');
-                    document.getElementById('upload-tab').classList.add('active');
-                    
-                } catch (error) {
-                    alert('Gagal membuat pratinjau: ' + error.message);
-                }
-            });
-            
             uploadBtn.addEventListener('click', async function() {
                 clearStatus();
                 
                 try {
-                    // Convert to image
                     const imageBlob = await convertToImage();
-                    
-                    // Upload to CDNs
                     const results = await uploadToAllCDNs(imageBlob);
-                    
-                    // Display results
                     displayResults(results);
                     
                 } catch (error) {
@@ -1001,67 +917,26 @@ curl -X POST "https://your-api.com/api/upload-sms" \
             });
         });
     </script>
-    
-    <div class="instructions">
-        <h3>📋 CDN yang Digunakan (URL Asli):</h3>
+
+    <div style="background: #1a1a1a; padding: 20px; border-radius: 10px; margin-top: 30px;">
+        <h3 style="color: #6c5ce7;">📋 CDN Branpedia yang Digunakan:</h3>
         
-        <div class="code-block">
-✅ tmpfiles.org - https://tmpfiles.org/
-• Permanen, no expiry date
-• Support berbagai format file
-• API langsung tersedia
-
-✅ file.io - https://file.io/  
-• Expiry: 14 hari
-• Simple API, mudah digunakan
-• Support sharing file
-
-✅ telegra.ph - https://telegra.ph/
-• Permanen, milik Telegram
-• Khusus untuk images/text
-• Cepat dan reliable
+        <div style="background: #222; padding: 15px; border-radius: 5px; margin: 10px 0;">
+            <h4 style="color: #00b0ff;">✅ Catbox.moe</h4>
+            <p><strong>URL:</strong> https://catbox.moe/user/api.php</p>
+            <p><strong>Fitur:</strong> Permanen, no expiry, support berbagai format</p>
         </div>
         
-        <h3>🚀 Contoh API Backend (Node.js):</h3>
-        <div class="code-block">
-// API endpoint untuk upload SMS
-app.post('/api/upload-sms', async (req, res) => {
-    const { sender, message, date, time, format } = req.body;
-    
-    try {
-        // Generate SMS image
-        const imageBuffer = await generateSMSImage({ sender, message, date, time, format });
+        <div style="background: #222; padding: 15px; border-radius: 5px; margin: 10px 0;">
+            <h4 style="color: #00b0ff;">✅ Qu.ax</h4>
+            <p><strong>URL:</strong> https://qu.ax/upload.php</p>
+            <p><strong>Fitur:</strong> File hosting, simple API</p>
+        </div>
         
-        // Upload ke multiple CDN
-        const results = await Promise.allSettled([
-            uploadToTmpFiles(imageBuffer),
-            uploadToFileIO(imageBuffer),
-            uploadToTelegraph(imageBuffer)
-        ]);
-        
-        const cdnUrls = {};
-        results.forEach((result, index) => {
-            if (result.status === 'fulfilled') {
-                cdnUrls[['tmpfiles', 'fileio', 'telegraph'][index]] = result.value;
-            }
-        });
-        
-        res.json({
-            success: true,
-            data: {
-                cdnUrls,
-                fileSize: formatBytes(imageBuffer.length),
-                message: `Upload berhasil ke ${Object.keys(cdnUrls).length} server`
-            }
-        });
-        
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
-    }
-});
+        <div style="background: #222; padding: 15px; border-radius: 5px; margin: 10px 0;">
+            <h4 style="color: #00b0ff;">✅ TmpFiles.org</h4>
+            <p><strong>URL:</strong> https://tmpfiles.org/api/v1/upload</p>
+            <p><strong>Fitur:</strong> Temporary storage, easy to use</p>
         </div>
     </div>
 </body>
