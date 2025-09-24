@@ -15,7 +15,6 @@
             --bottom-bg: #060606;
             --icon-main: #6c5ce7;
             --icon-alt: #00b0ff;
-            --icon-line: #ffffff;
         }
         
         * {
@@ -25,11 +24,12 @@
         }
         
         body {
-            font-family: "Courier New", Courier, monospace;
-            background: #111;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
             color: #fff;
             padding: 20px;
             line-height: 1.6;
+            min-height: 100vh;
         }
         
         .container {
@@ -49,20 +49,22 @@
             padding: 20px;
         }
         
-        .api-controls {
+        .controls {
             flex: 1;
             min-width: 400px;
-            background: #1a1a1a;
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
         }
         
         h1 {
             text-align: center;
             margin-bottom: 20px;
             color: #0f6b5a;
-            font-size: 28px;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         
         h2 {
@@ -86,12 +88,18 @@
         input, textarea, select {
             width: 100%;
             padding: 12px;
-            border: 1px solid #333;
-            border-radius: 5px;
-            background: #222;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
             color: #fff;
-            font-family: "Courier New", Courier, monospace;
             font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #0f6b5a;
+            box-shadow: 0 0 0 2px rgba(15, 107, 90, 0.3);
         }
         
         textarea {
@@ -104,17 +112,20 @@
             color: white;
             border: none;
             padding: 12px 20px;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
-            transition: background 0.3s;
+            transition: all 0.3s;
             margin-right: 10px;
             margin-bottom: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         
         button:hover {
             background: #0a5244;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.2);
         }
         
         button.secondary {
@@ -133,40 +144,6 @@
             background: #00a085;
         }
         
-        .api-url {
-            background: #222;
-            padding: 12px;
-            border-radius: 5px;
-            margin-top: 10px;
-            word-break: break-all;
-            font-family: monospace;
-            border: 1px solid #333;
-        }
-        
-        .response-container {
-            margin-top: 20px;
-            background: #222;
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #333;
-        }
-        
-        .response-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #00b0ff;
-        }
-        
-        .response-content {
-            font-family: monospace;
-            white-space: pre-wrap;
-            background: #111;
-            padding: 10px;
-            border-radius: 3px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        
         .preview-container {
             margin-top: 20px;
             text-align: center;
@@ -181,53 +158,57 @@
         #image-preview {
             max-width: 100%;
             border: 2px solid #0f6b5a;
-            border-radius: 5px;
+            border-radius: 10px;
             margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         
         .phone {
             width: 360px;
             height: 420px;
             background: var(--phone-bg);
-            border-radius: 18px;
-            padding: 14px;
+            border-radius: 30px;
+            padding: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .phone::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
         }
         
         .bezel {
             width: 100%;
             height: 100%;
             background: #000;
-            border-radius: 12px;
-            padding: 10px;
+            border-radius: 20px;
+            padding: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
         .screen {
-            width: calc(100% - 18px);
-            height: calc(100% - 40px);
+            width: 100%;
+            height: 100%;
             background: var(--screen-bg);
-            border-radius: 6px;
+            border-radius: 10px;
             overflow: hidden;
             position: relative;
             border: 3px solid #053f36;
             display: flex;
             flex-direction: column;
-        }
-        
-        .screen::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-            background-size: 3px 3px;
-            opacity: 0.7;
         }
         
         .header {
@@ -237,14 +218,14 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 6px 10px;
+            padding: 6px 15px;
             font-size: 20px;
         }
         
         .header .left, .header .right {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
         
         .title {
@@ -255,28 +236,31 @@
         }
         
         .icon-svg {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
         }
         
         .body {
-            padding: 18px 20px;
+            padding: 20px;
             color: var(--text);
             font-size: 20px;
             line-height: 1.5;
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         
         .message {
-            font-size: 26px;
-            line-height: 1.35;
+            font-size: 24px;
+            line-height: 1.4;
             color: #263a3d;
-            margin-bottom: 18px;
+            margin-bottom: 15px;
             white-space: pre-line;
         }
         
         .meta {
-            margin-top: 8px;
+            margin-top: 15px;
             color: var(--muted);
             font-size: 18px;
             line-height: 1.3;
@@ -285,7 +269,7 @@
         .meta .from {
             font-weight: 700;
             color: #132728;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
         
         .meta .date {
@@ -299,18 +283,19 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 16px;
+            padding: 0 20px;
             color: #bfe0ff;
             font-weight: 700;
-            font-size: 20px;
+            font-size: 18px;
         }
         
         .instructions {
             margin-top: 30px;
-            background: #1a1a1a;
+            background: rgba(255, 255, 255, 0.1);
             padding: 20px;
             border-radius: 10px;
             width: 100%;
+            backdrop-filter: blur(10px);
         }
         
         .instructions h3 {
@@ -327,31 +312,30 @@
             margin-bottom: 8px;
         }
         
-        .code-block {
-            background: #222;
-            padding: 12px;
-            border-radius: 5px;
-            font-family: monospace;
-            margin: 10px 0;
-            border-left: 3px solid #0f6b5a;
-        }
-        
         .status {
             margin-top: 10px;
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 8px;
             text-align: center;
             font-weight: bold;
         }
         
         .status.success {
-            background: #0f6b5a;
-            color: white;
+            background: rgba(15, 107, 90, 0.3);
+            color: #4cd964;
+            border: 1px solid #0f6b5a;
         }
         
         .status.error {
-            background: #b00020;
-            color: white;
+            background: rgba(176, 0, 32, 0.3);
+            color: #ff3b30;
+            border: 1px solid #b00020;
+        }
+        
+        .status.info {
+            background: rgba(0, 122, 255, 0.3);
+            color: #007aff;
+            border: 1px solid #007aff;
         }
         
         .tab-container {
@@ -360,31 +344,32 @@
         
         .tabs {
             display: flex;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
         }
         
         .tab {
-            padding: 10px 20px;
+            padding: 12px 24px;
             cursor: pointer;
-            background: #222;
-            border: 1px solid #333;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255,255,255,0.1);
             border-bottom: none;
-            border-radius: 5px 5px 0 0;
+            border-radius: 8px 8px 0 0;
             margin-right: 5px;
+            transition: all 0.3s;
         }
         
         .tab.active {
-            background: #0f6b5a;
+            background: rgba(15, 107, 90, 0.5);
             border-color: #0f6b5a;
         }
         
         .tab-content {
             display: none;
             padding: 20px;
-            background: #222;
-            border: 1px solid #333;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255,255,255,0.1);
             border-top: none;
-            border-radius: 0 0 5px 5px;
+            border-radius: 0 0 8px 8px;
         }
         
         .tab-content.active {
@@ -393,9 +378,9 @@
         
         .cdn-result {
             margin-top: 15px;
-            padding: 10px;
-            background: #1a3a1a;
-            border-radius: 5px;
+            padding: 15px;
+            background: rgba(26, 58, 26, 0.3);
+            border-radius: 8px;
             border: 1px solid #2d7a2d;
         }
         
@@ -403,31 +388,51 @@
             word-break: break-all;
             font-family: monospace;
             margin: 10px 0;
-            padding: 8px;
-            background: #0a240a;
-            border-radius: 3px;
+            padding: 10px;
+            background: rgba(10, 36, 10, 0.5);
+            border-radius: 5px;
+            border: 1px solid #2d7a2d;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .phone-container, .controls {
+                min-width: 100%;
+            }
+            
+            .phone {
+                width: 320px;
+                height: 380px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Generator SMS ke Gambar - Pak Eko</h1>
+    <h1>📱 Generator SMS ke Gambar - Pak Eko</h1>
     
     <div class="container">
         <div class="phone-container">
             <div class="phone" id="sms-mockup">
                 <div class="bezel">
                     <div class="screen">
-                        <!-- HEADER -->
                         <div class="header">
                             <div class="left">
-                                <!-- signal -->
                                 <svg class="icon-svg" viewBox="0 0 24 24">
                                     <rect x="2" y="16" width="2" height="6" fill="var(--icon-main)"/>
                                     <rect x="6" y="12" width="2" height="10" fill="var(--icon-main)"/>
                                     <rect x="10" y="8" width="2" height="14" fill="var(--icon-alt)"/>
                                     <rect x="14" y="4" width="2" height="18" fill="var(--icon-alt)"/>
                                 </svg>
-                                <!-- sms -->
                                 <svg class="icon-svg" viewBox="0 0 24 24">
                                     <rect x="2" y="6" width="20" height="12" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
                                     <polyline points="2,6 12,13 22,6" stroke="var(--icon-alt)" stroke-width="2" fill="none"/>
@@ -435,13 +440,11 @@
                             </div>
                             <div class="title" id="sender-name">Pak Eko</div>
                             <div class="right">
-                                <!-- alarm -->
                                 <svg class="icon-svg" viewBox="0 0 24 24">
                                     <circle cx="12" cy="13" r="6" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
                                     <line x1="12" y1="13" x2="12" y2="9" stroke="var(--icon-alt)" stroke-width="2"/>
                                     <line x1="12" y1="13" x2="15" y2="13" stroke="var(--icon-alt)" stroke-width="2"/>
                                 </svg>
-                                <!-- vibrate -->
                                 <svg class="icon-svg" viewBox="0 0 24 24">
                                     <rect x="8" y="6" width="8" height="12" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
                                     <line x1="2" y1="8" x2="5" y2="10" stroke="var(--icon-alt)" stroke-width="2"/>
@@ -449,7 +452,6 @@
                                     <line x1="22" y1="8" x2="19" y2="10" stroke="var(--icon-alt)" stroke-width="2"/>
                                     <line x1="22" y1="14" x2="19" y2="12" stroke="var(--icon-alt)" stroke-width="2"/>
                                 </svg>
-                                <!-- battery -->
                                 <svg class="icon-svg" viewBox="0 0 26 14">
                                     <rect x="1" y="3" width="20" height="8" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
                                     <rect x="22" y="5" width="3" height="4" fill="var(--icon-main)"/>
@@ -457,19 +459,14 @@
                                 </svg>
                             </div>
                         </div>
-                        <!-- MESSAGE -->
                         <div class="body">
-                            <div class="message" id="message-content">
-Kita ga enakan,
-orang seenaknya
-                            </div>
+                            <div class="message" id="message-content">Kita ga enakan, orang seenaknya</div>
                             <div class="meta">
                                 <div>Dari:</div>
                                 <div class="from" id="from-name">Pak Eko</div>
                                 <div class="date" id="message-date">08/07/2025<br>14:55</div>
                             </div>
                         </div>
-                        <!-- MENU -->
                         <div class="bottom-bar">
                             <div class="menu-left">Pilihan</div>
                             <div class="menu-right">Kembali</div>
@@ -479,7 +476,7 @@ orang seenaknya
             </div>
         </div>
         
-        <div class="api-controls">
+        <div class="controls">
             <div class="tab-container">
                 <div class="tabs">
                     <div class="tab active" data-tab="customize">Kustomisasi</div>
@@ -491,23 +488,22 @@ orang seenaknya
                     
                     <div class="form-group">
                         <label for="sender">Pengirim:</label>
-                        <input type="text" id="sender" value="Pak Eko">
+                        <input type="text" id="sender" value="Pak Eko" placeholder="Nama pengirim">
                     </div>
                     
                     <div class="form-group">
                         <label for="message">Pesan:</label>
-                        <textarea id="message">Kita ga enakan,
-orang seenaknya</textarea>
+                        <textarea id="message" placeholder="Tulis pesan SMS di sini">Kita ga enakan, orang seenaknya</textarea>
                     </div>
                     
                     <div class="form-group">
                         <label for="date">Tanggal:</label>
-                        <input type="text" id="date" value="08/07/2025">
+                        <input type="text" id="date" value="08/07/2025" placeholder="DD/MM/YYYY">
                     </div>
                     
                     <div class="form-group">
                         <label for="time">Waktu:</label>
-                        <input type="text" id="time" value="14:55">
+                        <input type="text" id="time" value="14:55" placeholder="HH:MM">
                     </div>
                     
                     <div class="form-group">
@@ -523,16 +519,20 @@ orang seenaknya</textarea>
                         <input type="number" id="quality" min="0.1" max="1" step="0.1" value="0.9">
                     </div>
                     
-                    <button id="update-btn">Perbarui Tampilan</button>
-                    <button id="reset-btn" class="secondary">Reset ke Default</button>
+                    <div class="button-group">
+                        <button id="update-btn">Perbarui Tampilan</button>
+                        <button id="reset-btn" class="secondary">Reset ke Default</button>
+                    </div>
                 </div>
                 
                 <div class="tab-content" id="preview-tab">
                     <h2>Pratinjau & Upload ke CDN</h2>
                     
-                    <button id="preview-btn">Pratinjau Gambar</button>
-                    <button id="download-btn" class="secondary">Unduh Gambar</button>
-                    <button id="upload-btn" class="upload">Upload ke Catbox</button>
+                    <div class="button-group">
+                        <button id="preview-btn">Pratinjau Gambar</button>
+                        <button id="download-btn" class="secondary">Unduh Gambar</button>
+                        <button id="upload-btn" class="upload">Upload ke Catbox</button>
+                    </div>
                     
                     <div class="preview-container">
                         <div class="preview-title">Pratinjau Gambar:</div>
@@ -540,11 +540,13 @@ orang seenaknya</textarea>
                     </div>
                     
                     <div id="cdn-result" class="cdn-result" style="display: none;">
-                        <div class="response-title">✅ Berhasil diupload ke CDN!</div>
+                        <div class="preview-title">✅ Berhasil diupload ke CDN!</div>
                         <div>URL Gambar:</div>
                         <div id="cdn-url" class="cdn-url"></div>
-                        <button id="copy-url-btn" class="secondary">Salin URL</button>
-                        <a id="open-url-btn" target="_blank" class="secondary" style="text-decoration: none; display: inline-block; margin-left: 10px;">Buka Gambar</a>
+                        <div class="button-group">
+                            <button id="copy-url-btn" class="secondary">Salin URL</button>
+                            <a id="open-url-btn" target="_blank" class="secondary" style="text-decoration: none; display: inline-block; padding: 12px 20px;">Buka Gambar</a>
+                        </div>
                     </div>
                     
                     <div id="status-message" class="status"></div>
@@ -554,15 +556,16 @@ orang seenaknya</textarea>
     </div>
     
     <div class="instructions">
-        <h3>Cara Menggunakan:</h3>
+        <h3>📋 Cara Menggunakan:</h3>
         <ol>
-            <li>Kustomisasi konten SMS di tab "Kustomisasi"</li>
-            <li>Klik "Perbarui Tampilan" untuk melihat perubahan</li>
-            <li>Pergi ke tab "Pratinjau & Upload"</li>
-            <li>Gunakan "Pratinjau Gambar" untuk melihat hasil</li>
-            <li>"Unduh Gambar" untuk menyimpan ke device</li>
-            <li>"Upload ke Catbox" untuk mendapatkan link CDN permanen</li>
+            <li><strong>Kustomisasi SMS</strong> - Isi data pengirim, pesan, tanggal, dan waktu di tab "Kustomisasi"</li>
+            <li><strong>Perbarui Tampilan</strong> - Klik tombol untuk melihat perubahan pada preview telepon</li>
+            <li><strong>Pratinjau Gambar</strong> - Pergi ke tab "Pratinjau & Upload" dan klik untuk melihat hasil gambar</li>
+            <li><strong>Upload ke CDN</strong> - Klik "Upload ke Catbox" untuk mendapatkan link permanen</li>
+            <li><strong>Share</strong> - Salin URL yang dihasilkan untuk berbagi gambar SMS</li>
         </ol>
+        
+        <p><strong>Catatan:</strong> Semua proses dilakukan di browser Anda. Gambar tidak dikirim ke server manapun kecuali saat upload ke Catbox CDN.</p>
     </div>
 
     <script>
@@ -629,9 +632,15 @@ orang seenaknya</textarea>
             }
             
             // Fungsi untuk menampilkan pesan status
-            function showStatus(message, isError = false) {
+            function showStatus(message, isError = false, isInfo = false) {
                 statusMessage.textContent = message;
-                statusMessage.className = isError ? 'status error' : 'status success';
+                if (isError) {
+                    statusMessage.className = 'status error';
+                } else if (isInfo) {
+                    statusMessage.className = 'status info';
+                } else {
+                    statusMessage.className = 'status success';
+                }
             }
             
             // Fungsi untuk mengonversi SMS ke gambar
@@ -644,7 +653,8 @@ orang seenaknya</textarea>
                         scale: 2,
                         useCORS: true,
                         allowTaint: true,
-                        backgroundColor: null
+                        backgroundColor: null,
+                        logging: false
                     });
                     
                     return canvas.toDataURL(`image/${format}`, quality);
@@ -657,7 +667,7 @@ orang seenaknya</textarea>
             // Fungsi untuk upload ke Catbox CDN
             async function uploadToCatbox(imageDataUrl) {
                 try {
-                    showStatus('📤 Mengupload gambar ke Catbox CDN...');
+                    showStatus('📤 Mengupload gambar ke Catbox CDN...', false, true);
                     
                     // Convert data URL to blob
                     const response = await fetch(imageDataUrl);
@@ -677,7 +687,6 @@ orang seenaknya</textarea>
                     
                     if (uploadResponse.ok) {
                         const cdnUrl = await uploadResponse.text();
-                        showStatus('✅ Gambar berhasil diupload ke CDN!');
                         return cdnUrl;
                     } else {
                         throw new Error('Upload gagal dengan status: ' + uploadResponse.status);
@@ -694,18 +703,18 @@ orang seenaknya</textarea>
             // Event listener untuk tombol reset
             resetBtn.addEventListener('click', function() {
                 senderInput.value = "Pak Eko";
-                messageInput.value = "Kita ga enakan,\norang seenaknya";
+                messageInput.value = "Kita ga enakan, orang seenaknya";
                 dateInput.value = "08/07/2025";
                 timeInput.value = "14:55";
                 formatSelect.value = "png";
                 qualityInput.value = "0.9";
                 updateSMSDisplay();
-                showStatus('SMS telah direset ke nilai default.');
+                showStatus('SMS telah direset ke nilai default.', false, true);
             });
             
             // Event listener untuk tombol pratinjau
             previewBtn.addEventListener('click', async function() {
-                showStatus('🔄 Membuat pratinjau gambar...');
+                showStatus('🔄 Membuat pratinjau gambar...', false, true);
                 try {
                     const imageData = await generateSMSImage();
                     imagePreview.src = imageData;
@@ -718,7 +727,7 @@ orang seenaknya</textarea>
             
             // Event listener untuk tombol unduh
             downloadBtn.addEventListener('click', async function() {
-                showStatus('🔄 Membuat dan mengunduh gambar...');
+                showStatus('🔄 Membuat dan mengunduh gambar...', false, true);
                 try {
                     const imageData = await generateSMSImage();
                     const link = document.createElement('a');
@@ -733,7 +742,7 @@ orang seenaknya</textarea>
             
             // Event listener untuk tombol upload
             uploadBtn.addEventListener('click', async function() {
-                showStatus('🔄 Memproses gambar...');
+                showStatus('🔄 Memproses gambar...', false, true);
                 try {
                     const imageData = await generateSMSImage();
                     const cdnUrlResult = await uploadToCatbox(imageData);
@@ -742,6 +751,8 @@ orang seenaknya</textarea>
                     cdnUrl.textContent = cdnUrlResult;
                     openUrlBtn.href = cdnUrlResult;
                     cdnResult.style.display = 'block';
+                    
+                    showStatus('✅ Gambar berhasil diupload ke CDN!');
                     
                 } catch (error) {
                     showStatus('❌ ' + error.message, true);
@@ -780,7 +791,7 @@ orang seenaknya</textarea>
                 
                 // Auto-preview jika ada parameter
                 setTimeout(() => {
-                    showStatus('Membuat pratinjau dari parameter URL...');
+                    showStatus('Membuat pratinjau dari parameter URL...', false, true);
                     previewBtn.click();
                 }, 1000);
             }
