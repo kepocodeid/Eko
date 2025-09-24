@@ -1,0 +1,400 @@
+:root {
+    --primary: #0f6b5a;
+    --secondary: #6c5ce7;
+    --accent: #00b0ff;
+    --dark: #0b2430;
+    --light: #dbeef0;
+    --gray: #6b7680;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background: linear-gradient(135deg, #0b2430 0%, #1a3a4a 100%);
+    color: white;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 20px;
+    background: rgba(15, 107, 90, 0.1);
+    border-radius: 10px;
+    border: 1px solid var(--primary);
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    color: var(--accent);
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+.preview-section {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--secondary);
+}
+
+.controls-section {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--primary);
+}
+
+/* Phone Mockup Styles */
+.phone-mockup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.phone {
+    width: 300px;
+    height: 350px;
+    background: #0b0b0b;
+    border-radius: 15px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bezel {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    border-radius: 10px;
+    padding: 8px;
+}
+
+.screen {
+    width: 100%;
+    height: 100%;
+    background: #dbeef0;
+    border-radius: 5px;
+    border: 2px solid #053f36;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.screen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+    background-size: 3px 3px;
+    opacity: 0.7;
+}
+
+.header {
+    height: 50px;
+    background: #0f6b5a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    color: white;
+}
+
+.header-left, .header-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.sender-name {
+    font-weight: bold;
+    font-size: 18px;
+    font-family: Arial, sans-serif;
+}
+
+/* Icon Styles */
+.signal-icon, .sms-icon, .alarm-icon, .vibrate-icon, .battery-icon {
+    width: 16px;
+    height: 16px;
+    background: currentColor;
+    position: relative;
+}
+
+.signal-icon::before, .sms-icon::before, .alarm-icon::before, 
+.vibrate-icon::before, .battery-icon::before {
+    content: "";
+    position: absolute;
+    background: inherit;
+}
+
+.message-content {
+    flex: 1;
+    padding: 15px;
+    color: #263a3d;
+    display: flex;
+    flex-direction: column;
+}
+
+.message-text {
+    font-size: 20px;
+    line-height: 1.4;
+    margin-bottom: 15px;
+    flex: 1;
+}
+
+.message-meta {
+    margin-top: auto;
+}
+
+.meta-label {
+    color: #6b7680;
+    font-size: 14px;
+}
+
+.sender-meta {
+    color: #132728;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.datetime {
+    color: #112a2b;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.bottom-bar {
+    height: 35px;
+    background: #060606;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    color: #bfe0ff;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--accent);
+    font-weight: bold;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--gray);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-family: inherit;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Button Styles */
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.btn-secondary {
+    background: var(--secondary);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+}
+
+.btn-success {
+    background: #27ae60;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+}
+
+.btn-primary:hover { background: #0a5244; }
+.btn-secondary:hover { background: #5649c0; }
+.btn-success:hover { background: #219653; }
+
+/* Tab Styles */
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--gray);
+}
+
+.tab-button {
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    color: var(--gray);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-button.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* API Result Styles */
+.api-result, .api-test {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+}
+
+.api-url {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    word-break: break-all;
+    font-family: monospace;
+    border: 1px solid var(--gray);
+}
+
+/* Image Preview */
+.image-preview {
+    margin-top: 20px;
+}
+
+#image-container {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+#generated-image {
+    max-width: 100%;
+    max-height: 300px;
+    border: 2px solid var(--primary);
+    border-radius: 5px;
+}
+
+.status-message {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.status-message.success {
+    background: rgba(39, 174, 96, 0.2);
+    border: 1px solid #27ae60;
+}
+
+.status-message.error {
+    background: rgba(231, 76, 60, 0.2);
+    border: 1px solid #e74c3c;
+}
+
+/* Documentation */
+.documentation {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 10px;
+    border: 1px solid var(--secondary);
+}
+
+.code-example {
+    margin-top: 20px;
+}
+
+pre {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 5px;
+    overflow-x: auto;
+    border: 1px solid var(--gray);
+}
+
+code {
+    color: #f8f8f2;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    header h1 {
+        font-size: 1.8em;
+    }
+    
+    .phone {
+        width: 250px;
+        height: 300px;
+    }
+    
+    .message-text {
+        font-size: 16px;
+    }
+}
