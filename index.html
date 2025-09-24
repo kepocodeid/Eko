@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator SMS ke Gambar - Pak Eko</title>
+    <title>API Generator SMS ke Gambar - Pak Eko</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         :root {
@@ -15,6 +15,7 @@
             --bottom-bg: #060606;
             --icon-main: #6c5ce7;
             --icon-alt: #00b0ff;
+            --icon-line: #ffffff;
         }
         
         * {
@@ -24,12 +25,11 @@
         }
         
         body {
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            font-family: "Courier New", Courier, monospace;
+            background: #111;
             color: #fff;
             padding: 20px;
             line-height: 1.6;
-            min-height: 100vh;
         }
         
         .container {
@@ -49,22 +49,20 @@
             padding: 20px;
         }
         
-        .controls {
+        .api-controls {
             flex: 1;
             min-width: 400px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
+            background: #1a1a1a;
+            border-radius: 10px;
             padding: 25px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         
         h1 {
             text-align: center;
             margin-bottom: 20px;
             color: #0f6b5a;
-            font-size: 2.5rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            font-size: 28px;
         }
         
         h2 {
@@ -88,18 +86,12 @@
         input, textarea, select {
             width: 100%;
             padding: 12px;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+            border-radius: 5px;
+            background: #222;
             color: #fff;
+            font-family: "Courier New", Courier, monospace;
             font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: #0f6b5a;
-            box-shadow: 0 0 0 2px rgba(15, 107, 90, 0.3);
         }
         
         textarea {
@@ -112,20 +104,17 @@
             color: white;
             border: none;
             padding: 12px 20px;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
-            transition: all 0.3s;
+            transition: background 0.3s;
             margin-right: 10px;
             margin-bottom: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         
         button:hover {
             background: #0a5244;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.2);
         }
         
         button.secondary {
@@ -136,12 +125,38 @@
             background: #5649c0;
         }
         
-        button.upload {
-            background: #00b894;
+        .api-url {
+            background: #222;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 10px;
+            word-break: break-all;
+            font-family: monospace;
+            border: 1px solid #333;
         }
         
-        button.upload:hover {
-            background: #00a085;
+        .response-container {
+            margin-top: 20px;
+            background: #222;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #333;
+        }
+        
+        .response-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #00b0ff;
+        }
+        
+        .response-content {
+            font-family: monospace;
+            white-space: pre-wrap;
+            background: #111;
+            padding: 10px;
+            border-radius: 3px;
+            max-height: 200px;
+            overflow-y: auto;
         }
         
         .preview-container {
@@ -158,57 +173,53 @@
         #image-preview {
             max-width: 100%;
             border: 2px solid #0f6b5a;
-            border-radius: 10px;
+            border-radius: 5px;
             margin-top: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         
         .phone {
             width: 360px;
             height: 420px;
             background: var(--phone-bg);
-            border-radius: 30px;
-            padding: 20px;
+            border-radius: 18px;
+            padding: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            position: relative;
-        }
-        
-        .phone::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 6px;
-            background: #333;
-            border-radius: 3px;
         }
         
         .bezel {
             width: 100%;
             height: 100%;
             background: #000;
-            border-radius: 20px;
-            padding: 15px;
+            border-radius: 12px;
+            padding: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
         .screen {
-            width: 100%;
-            height: 100%;
+            width: calc(100% - 18px);
+            height: calc(100% - 40px);
             background: var(--screen-bg);
-            border-radius: 10px;
+            border-radius: 6px;
             overflow: hidden;
             position: relative;
             border: 3px solid #053f36;
             display: flex;
             flex-direction: column;
+        }
+        
+        .screen::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+            background-size: 3px 3px;
+            opacity: 0.7;
         }
         
         .header {
@@ -218,14 +229,14 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 6px 15px;
+            padding: 6px 10px;
             font-size: 20px;
         }
         
         .header .left, .header .right {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .title {
@@ -236,31 +247,28 @@
         }
         
         .icon-svg {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
         }
         
         .body {
-            padding: 20px;
+            padding: 18px 20px;
             color: var(--text);
             font-size: 20px;
             line-height: 1.5;
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
         }
         
         .message {
-            font-size: 24px;
-            line-height: 1.4;
+            font-size: 26px;
+            line-height: 1.35;
             color: #263a3d;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             white-space: pre-line;
         }
         
         .meta {
-            margin-top: 15px;
+            margin-top: 8px;
             color: var(--muted);
             font-size: 18px;
             line-height: 1.3;
@@ -269,7 +277,7 @@
         .meta .from {
             font-weight: 700;
             color: #132728;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         
         .meta .date {
@@ -283,19 +291,18 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 20px;
+            padding: 0 16px;
             color: #bfe0ff;
             font-weight: 700;
-            font-size: 18px;
+            font-size: 20px;
         }
         
         .instructions {
             margin-top: 30px;
-            background: rgba(255, 255, 255, 0.1);
+            background: #1a1a1a;
             padding: 20px;
             border-radius: 10px;
             width: 100%;
-            backdrop-filter: blur(10px);
         }
         
         .instructions h3 {
@@ -312,30 +319,31 @@
             margin-bottom: 8px;
         }
         
+        .code-block {
+            background: #222;
+            padding: 12px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+            border-left: 3px solid #0f6b5a;
+        }
+        
         .status {
             margin-top: 10px;
             padding: 10px;
-            border-radius: 8px;
+            border-radius: 5px;
             text-align: center;
             font-weight: bold;
         }
         
         .status.success {
-            background: rgba(15, 107, 90, 0.3);
-            color: #4cd964;
-            border: 1px solid #0f6b5a;
+            background: #0f6b5a;
+            color: white;
         }
         
         .status.error {
-            background: rgba(176, 0, 32, 0.3);
-            color: #ff3b30;
-            border: 1px solid #b00020;
-        }
-        
-        .status.info {
-            background: rgba(0, 122, 255, 0.3);
-            color: #007aff;
-            border: 1px solid #007aff;
+            background: #b00020;
+            color: white;
         }
         
         .tab-container {
@@ -344,95 +352,57 @@
         
         .tabs {
             display: flex;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+            border-bottom: 1px solid #333;
         }
         
         .tab {
-            padding: 12px 24px;
+            padding: 10px 20px;
             cursor: pointer;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: #222;
+            border: 1px solid #333;
             border-bottom: none;
-            border-radius: 8px 8px 0 0;
+            border-radius: 5px 5px 0 0;
             margin-right: 5px;
-            transition: all 0.3s;
         }
         
         .tab.active {
-            background: rgba(15, 107, 90, 0.5);
+            background: #0f6b5a;
             border-color: #0f6b5a;
         }
         
         .tab-content {
             display: none;
             padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: #222;
+            border: 1px solid #333;
             border-top: none;
-            border-radius: 0 0 8px 8px;
+            border-radius: 0 0 5px 5px;
         }
         
         .tab-content.active {
             display: block;
         }
-        
-        .cdn-result {
-            margin-top: 15px;
-            padding: 15px;
-            background: rgba(26, 58, 26, 0.3);
-            border-radius: 8px;
-            border: 1px solid #2d7a2d;
-        }
-        
-        .cdn-url {
-            word-break: break-all;
-            font-family: monospace;
-            margin: 10px 0;
-            padding: 10px;
-            background: rgba(10, 36, 10, 0.5);
-            border-radius: 5px;
-            border: 1px solid #2d7a2d;
-        }
-        
-        .button-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-            
-            .phone-container, .controls {
-                min-width: 100%;
-            }
-            
-            .phone {
-                width: 320px;
-                height: 380px;
-            }
-        }
     </style>
 </head>
 <body>
-    <h1>📱 Generator SMS ke Gambar - Pak Eko</h1>
+    <h1>API Generator SMS ke Gambar - Pak Eko</h1>
     
     <div class="container">
         <div class="phone-container">
             <div class="phone" id="sms-mockup">
                 <div class="bezel">
                     <div class="screen">
+                        <!-- HEADER -->
                         <div class="header">
                             <div class="left">
+                                <!-- signal -->
                                 <svg class="icon-svg" viewBox="0 0 24 24">
                                     <rect x="2" y="16" width="2" height="6" fill="var(--icon-main)"/>
                                     <rect x="6" y="12" width="2" height="10" fill="var(--icon-main)"/>
                                     <rect x="10" y="8" width="2" height="14" fill="var(--icon-alt)"/>
                                     <rect x="14" y="4" width="2" height="18" fill="var(--icon-alt)"/>
                                 </svg>
+                                <!-- sms -->
                                 <svg class="icon-svg" viewBox="0 0 24 24">
                                     <rect x="2" y="6" width="20" height="12" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
                                     <polyline points="2,6 12,13 22,6" stroke="var(--icon-alt)" stroke-width="2" fill="none"/>
@@ -440,11 +410,13 @@
                             </div>
                             <div class="title" id="sender-name">Pak Eko</div>
                             <div class="right">
+                                <!-- alarm -->
                                 <svg class="icon-svg" viewBox="0 0 24 24">
                                     <circle cx="12" cy="13" r="6" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
                                     <line x1="12" y1="13" x2="12" y2="9" stroke="var(--icon-alt)" stroke-width="2"/>
                                     <line x1="12" y1="13" x2="15" y2="13" stroke="var(--icon-alt)" stroke-width="2"/>
                                 </svg>
+                                <!-- vibrate -->
                                 <svg class="icon-svg" viewBox="0 0 24 24">
                                     <rect x="8" y="6" width="8" height="12" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
                                     <line x1="2" y1="8" x2="5" y2="10" stroke="var(--icon-alt)" stroke-width="2"/>
@@ -452,6 +424,7 @@
                                     <line x1="22" y1="8" x2="19" y2="10" stroke="var(--icon-alt)" stroke-width="2"/>
                                     <line x1="22" y1="14" x2="19" y2="12" stroke="var(--icon-alt)" stroke-width="2"/>
                                 </svg>
+                                <!-- battery -->
                                 <svg class="icon-svg" viewBox="0 0 26 14">
                                     <rect x="1" y="3" width="20" height="8" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
                                     <rect x="22" y="5" width="3" height="4" fill="var(--icon-main)"/>
@@ -459,14 +432,19 @@
                                 </svg>
                             </div>
                         </div>
+                        <!-- MESSAGE -->
                         <div class="body">
-                            <div class="message" id="message-content">Kita ga enakan, orang seenaknya</div>
+                            <div class="message" id="message-content">
+Kita ga enakan,
+orang seenaknya
+                            </div>
                             <div class="meta">
                                 <div>Dari:</div>
                                 <div class="from" id="from-name">Pak Eko</div>
                                 <div class="date" id="message-date">08/07/2025<br>14:55</div>
                             </div>
                         </div>
+                        <!-- MENU -->
                         <div class="bottom-bar">
                             <div class="menu-left">Pilihan</div>
                             <div class="menu-right">Kembali</div>
@@ -476,11 +454,12 @@
             </div>
         </div>
         
-        <div class="controls">
+        <div class="api-controls">
             <div class="tab-container">
                 <div class="tabs">
                     <div class="tab active" data-tab="customize">Kustomisasi</div>
-                    <div class="tab" data-tab="preview">Pratinjau & Upload</div>
+                    <div class="tab" data-tab="api">API & URL</div>
+                    <div class="tab" data-tab="preview">Pratinjau & Unduh</div>
                 </div>
                 
                 <div class="tab-content active" id="customize-tab">
@@ -488,23 +467,31 @@
                     
                     <div class="form-group">
                         <label for="sender">Pengirim:</label>
-                        <input type="text" id="sender" value="Pak Eko" placeholder="Nama pengirim">
+                        <input type="text" id="sender" value="Pak Eko">
                     </div>
                     
                     <div class="form-group">
                         <label for="message">Pesan:</label>
-                        <textarea id="message" placeholder="Tulis pesan SMS di sini">Kita ga enakan, orang seenaknya</textarea>
+                        <textarea id="message">Kita ga enakan,
+orang seenaknya</textarea>
                     </div>
                     
                     <div class="form-group">
                         <label for="date">Tanggal:</label>
-                        <input type="text" id="date" value="08/07/2025" placeholder="DD/MM/YYYY">
+                        <input type="text" id="date" value="08/07/2025">
                     </div>
                     
                     <div class="form-group">
                         <label for="time">Waktu:</label>
-                        <input type="text" id="time" value="14:55" placeholder="HH:MM">
+                        <input type="text" id="time" value="14:55">
                     </div>
+                    
+                    <button id="update-btn">Perbarui Tampilan</button>
+                    <button id="reset-btn" class="secondary">Reset ke Default</button>
+                </div>
+                
+                <div class="tab-content" id="api-tab">
+                    <h2>API & URL Generator</h2>
                     
                     <div class="form-group">
                         <label for="format">Format Gambar:</label>
@@ -514,39 +501,34 @@
                         </select>
                     </div>
                     
-                    <div class="form-group" id="quality-group" style="display: none;">
-                        <label for="quality">Kualitas JPEG (0.1-1.0):</label>
-                        <input type="number" id="quality" min="0.1" max="1" step="0.1" value="0.9">
+                    <div class="form-group">
+                        <label for="quality">Kualitas JPEG (0-1):</label>
+                        <input type="number" id="quality" min="0" max="1" step="0.1" value="0.9">
                     </div>
                     
-                    <div class="button-group">
-                        <button id="update-btn">Perbarui Tampilan</button>
-                        <button id="reset-btn" class="secondary">Reset ke Default</button>
+                    <button id="api-btn">Generate API URL</button>
+                    
+                    <div class="api-url" id="api-url-display">
+                        API URL akan muncul di sini
+                    </div>
+                    
+                    <div class="response-container">
+                        <div class="response-title">Response JSON:</div>
+                        <div class="response-content" id="json-response">
+                            {"sender": "Pak Eko", "message": "Kita ga enakan,\norang seenaknya", "date": "08/07/2025", "time": "14:55", "format": "png", "quality": 0.9}
+                        </div>
                     </div>
                 </div>
                 
                 <div class="tab-content" id="preview-tab">
-                    <h2>Pratinjau & Upload ke CDN</h2>
+                    <h2>Pratinjau & Unduh Gambar</h2>
                     
-                    <div class="button-group">
-                        <button id="preview-btn">Pratinjau Gambar</button>
-                        <button id="download-btn" class="secondary">Unduh Gambar</button>
-                        <button id="upload-btn" class="upload">Upload ke Catbox</button>
-                    </div>
+                    <button id="preview-btn">Pratinjau Gambar</button>
+                    <button id="download-btn" class="secondary">Unduh Gambar</button>
                     
                     <div class="preview-container">
                         <div class="preview-title">Pratinjau Gambar:</div>
                         <img id="image-preview" src="" alt="Pratinjau gambar akan muncul di sini">
-                    </div>
-                    
-                    <div id="cdn-result" class="cdn-result" style="display: none;">
-                        <div class="preview-title">✅ Berhasil diupload ke CDN!</div>
-                        <div>URL Gambar:</div>
-                        <div id="cdn-url" class="cdn-url"></div>
-                        <div class="button-group">
-                            <button id="copy-url-btn" class="secondary">Salin URL</button>
-                            <a id="open-url-btn" target="_blank" class="secondary" style="text-decoration: none; display: inline-block; padding: 12px 20px;">Buka Gambar</a>
-                        </div>
                     </div>
                     
                     <div id="status-message" class="status"></div>
@@ -556,18 +538,38 @@
     </div>
     
     <div class="instructions">
-        <h3>📋 Cara Menggunakan:</h3>
+        <h3>Cara Menggunakan API untuk Gambar:</h3>
         <ol>
-            <li><strong>Kustomisasi SMS</strong> - Isi data pengirim, pesan, tanggal, dan waktu di tab "Kustomisasi"</li>
-            <li><strong>Perbarui Tampilan</strong> - Klik tombol untuk melihat perubahan pada preview telepon</li>
-            <li><strong>Pratinjau Gambar</strong> - Pergi ke tab "Pratinjau & Upload" dan klik untuk melihat hasil gambar</li>
-            <li><strong>Upload ke CDN</strong> - Klik "Upload ke Catbox" untuk mendapatkan link permanen</li>
-            <li><strong>Share</strong> - Salin URL yang dihasilkan untuk berbagi gambar SMS</li>
+            <li>Kustomisasi konten SMS di tab "Kustomisasi"</li>
+            <li>Pilih format dan kualitas gambar di tab "API & URL"</li>
+            <li>Generate URL API yang berisi parameter SMS Anda</li>
+            <li>Gunakan URL tersebut untuk mengambil gambar SMS secara langsung</li>
+            <li>Lihat pratinjau dan unduh gambar di tab "Pratinjau & Unduh"</li>
         </ol>
         
-        <p><strong>Catatan:</strong> Semua proses dilakukan di browser Anda. Gambar tidak dikirim ke server manapun kecuali saat upload ke Catbox CDN.</p>
-    </div>
+        <h3>Contoh Penggunaan API:</h3>
+        <div class="code-block">
+// Mengambil gambar SMS melalui API
+const apiUrl = 'http://example.com/api/sms-image?sender=Pak%20Eko&message=Test%20pesan&date=08/07/2025&time=14:55&format=png';
 
+// Untuk menampilkan gambar langsung
+const img = document.createElement('img');
+img.src = apiUrl;
+document.body.appendChild(img);
+
+// Atau untuk mengunduh gambar
+fetch(apiUrl)
+  .then(response => response.blob())
+  .then(blob => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sms-pak-eko.png';
+    a.click();
+  });
+        </div>
+    </div>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Elemen form
@@ -575,16 +577,13 @@
             const messageInput = document.getElementById('message');
             const dateInput = document.getElementById('date');
             const timeInput = document.getElementById('time');
-            const formatSelect = document.getElementById('format');
-            const qualityInput = document.getElementById('quality');
-            const qualityGroup = document.getElementById('quality-group');
             const updateBtn = document.getElementById('update-btn');
             const resetBtn = document.getElementById('reset-btn');
-            const previewBtn = document.getElementById('preview-btn');
             const downloadBtn = document.getElementById('download-btn');
-            const uploadBtn = document.getElementById('upload-btn');
-            const copyUrlBtn = document.getElementById('copy-url-btn');
-            const openUrlBtn = document.getElementById('open-url-btn');
+            const previewBtn = document.getElementById('preview-btn');
+            const apiBtn = document.getElementById('api-btn');
+            const formatSelect = document.getElementById('format');
+            const qualityInput = document.getElementById('quality');
             
             // Elemen tampilan
             const senderName = document.getElementById('sender-name');
@@ -594,8 +593,8 @@
             const smsMockup = document.getElementById('sms-mockup');
             const imagePreview = document.getElementById('image-preview');
             const statusMessage = document.getElementById('status-message');
-            const cdnResult = document.getElementById('cdn-result');
-            const cdnUrl = document.getElementById('cdn-url');
+            const apiUrlDisplay = document.getElementById('api-url-display');
+            const jsonResponse = document.getElementById('json-response');
             
             // Tab functionality
             const tabs = document.querySelectorAll('.tab');
@@ -621,8 +620,25 @@
                 fromName.textContent = senderInput.value;
                 messageContent.textContent = messageInput.value;
                 messageDate.innerHTML = `${dateInput.value}<br>${timeInput.value}`;
+                
+                // Perbarui response JSON
+                updateJsonResponse();
+                
                 clearStatus();
-                cdnResult.style.display = 'none';
+            }
+            
+            // Fungsi untuk memperbarui response JSON
+            function updateJsonResponse() {
+                const smsData = {
+                    sender: senderInput.value,
+                    message: messageInput.value,
+                    date: dateInput.value,
+                    time: timeInput.value,
+                    format: formatSelect.value,
+                    quality: formatSelect.value === 'jpeg' ? parseFloat(qualityInput.value) : 1.0
+                };
+                
+                jsonResponse.textContent = JSON.stringify(smsData, null, 2);
             }
             
             // Fungsi untuk membersihkan pesan status
@@ -632,69 +648,60 @@
             }
             
             // Fungsi untuk menampilkan pesan status
-            function showStatus(message, isError = false, isInfo = false) {
+            function showStatus(message, isError = false) {
                 statusMessage.textContent = message;
-                if (isError) {
-                    statusMessage.className = 'status error';
-                } else if (isInfo) {
-                    statusMessage.className = 'status info';
-                } else {
-                    statusMessage.className = 'status success';
-                }
+                statusMessage.className = isError ? 'status error' : 'status success';
             }
             
             // Fungsi untuk mengonversi SMS ke gambar
-            async function generateSMSImage() {
+            function convertToImage(callback, isPreview = false) {
                 const format = formatSelect.value;
                 const quality = format === 'jpeg' ? parseFloat(qualityInput.value) : 1.0;
                 
-                try {
-                    const canvas = await html2canvas(smsMockup, {
-                        scale: 2,
-                        useCORS: true,
-                        allowTaint: true,
-                        backgroundColor: null,
-                        logging: false
-                    });
+                // Opsi untuk html2canvas
+                const options = {
+                    scale: 2, // Skala 2x untuk kualitas lebih tinggi
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: null // Latar belakang transparan untuk PNG
+                };
+                
+                html2canvas(smsMockup, options).then(function(canvas) {
+                    if (isPreview) {
+                        // Untuk pratinjau, konversi ke URL data
+                        imagePreview.src = canvas.toDataURL(`image/${format}`, quality);
+                        showStatus('Pratinjau gambar berhasil dibuat!');
+                    } else {
+                        // Untuk unduhan, buat link unduhan
+                        const imageData = canvas.toDataURL(`image/${format}`, quality);
+                        const link = document.createElement('a');
+                        link.download = `sms-pak-eko-${new Date().getTime()}.${format}`;
+                        link.href = imageData;
+                        link.click();
+                        showStatus('Gambar berhasil diunduh!');
+                    }
                     
-                    return canvas.toDataURL(`image/${format}`, quality);
-                } catch (error) {
-                    console.error('Error generating image:', error);
-                    throw new Error('Gagal menghasilkan gambar: ' + error.message);
-                }
+                    if (callback) callback();
+                }).catch(function(error) {
+                    console.error('Error converting to image:', error);
+                    showStatus('Terjadi kesalahan saat membuat gambar.', true);
+                    if (callback) callback();
+                });
             }
             
-            // Fungsi untuk upload ke Catbox CDN
-            async function uploadToCatbox(imageDataUrl) {
-                try {
-                    showStatus('📤 Mengupload gambar ke Catbox CDN...', false, true);
-                    
-                    // Convert data URL to blob
-                    const response = await fetch(imageDataUrl);
-                    const blob = await response.blob();
-                    
-                    // Create form data
-                    const formData = new FormData();
-                    const filename = `sms-${Date.now()}.${formatSelect.value}`;
-                    formData.append('reqtype', 'fileupload');
-                    formData.append('fileToUpload', blob, filename);
-                    
-                    // Upload to Catbox
-                    const uploadResponse = await fetch('https://catbox.moe/user/api.php', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    if (uploadResponse.ok) {
-                        const cdnUrl = await uploadResponse.text();
-                        return cdnUrl;
-                    } else {
-                        throw new Error('Upload gagal dengan status: ' + uploadResponse.status);
-                    }
-                } catch (error) {
-                    console.error('Upload error:', error);
-                    throw new Error('Gagal mengupload ke CDN: ' + error.message);
-                }
+            // Fungsi untuk menghasilkan URL API
+            function generateApiUrl() {
+                const baseUrl = window.location.href.split('?')[0];
+                const params = new URLSearchParams({
+                    sender: senderInput.value,
+                    message: messageInput.value,
+                    date: dateInput.value,
+                    time: timeInput.value,
+                    format: formatSelect.value,
+                    quality: formatSelect.value === 'jpeg' ? qualityInput.value : '1.0'
+                });
+                
+                return `${baseUrl}?${params.toString()}`;
             }
             
             // Event listener untuk tombol update
@@ -703,101 +710,72 @@
             // Event listener untuk tombol reset
             resetBtn.addEventListener('click', function() {
                 senderInput.value = "Pak Eko";
-                messageInput.value = "Kita ga enakan, orang seenaknya";
+                messageInput.value = "Kita ga enakan,\norang seenaknya";
                 dateInput.value = "08/07/2025";
                 timeInput.value = "14:55";
                 formatSelect.value = "png";
                 qualityInput.value = "0.9";
                 updateSMSDisplay();
-                showStatus('SMS telah direset ke nilai default.', false, true);
+                showStatus('SMS telah direset ke nilai default.');
+            });
+            
+            // Event listener untuk tombol API
+            apiBtn.addEventListener('click', function() {
+                const apiUrl = generateApiUrl();
+                apiUrlDisplay.textContent = apiUrl;
+                
+                // Salin ke clipboard
+                navigator.clipboard.writeText(apiUrl).then(function() {
+                    showStatus('URL API telah disalin ke clipboard!');
+                });
             });
             
             // Event listener untuk tombol pratinjau
-            previewBtn.addEventListener('click', async function() {
-                showStatus('🔄 Membuat pratinjau gambar...', false, true);
-                try {
-                    const imageData = await generateSMSImage();
-                    imagePreview.src = imageData;
-                    showStatus('✅ Pratinjau gambar berhasil dibuat!');
-                    cdnResult.style.display = 'none';
-                } catch (error) {
-                    showStatus('❌ ' + error.message, true);
-                }
+            previewBtn.addEventListener('click', function() {
+                showStatus('Membuat pratinjau gambar...');
+                convertToImage(null, true);
             });
             
             // Event listener untuk tombol unduh
-            downloadBtn.addEventListener('click', async function() {
-                showStatus('🔄 Membuat dan mengunduh gambar...', false, true);
-                try {
-                    const imageData = await generateSMSImage();
-                    const link = document.createElement('a');
-                    link.download = `sms-${senderInput.value}-${new Date().getTime()}.${formatSelect.value}`;
-                    link.href = imageData;
-                    link.click();
-                    showStatus('✅ Gambar berhasil diunduh!');
-                } catch (error) {
-                    showStatus('❌ ' + error.message, true);
-                }
-            });
-            
-            // Event listener untuk tombol upload
-            uploadBtn.addEventListener('click', async function() {
-                showStatus('🔄 Memproses gambar...', false, true);
-                try {
-                    const imageData = await generateSMSImage();
-                    const cdnUrlResult = await uploadToCatbox(imageData);
-                    
-                    // Show CDN result
-                    cdnUrl.textContent = cdnUrlResult;
-                    openUrlBtn.href = cdnUrlResult;
-                    cdnResult.style.display = 'block';
-                    
-                    showStatus('✅ Gambar berhasil diupload ke CDN!');
-                    
-                } catch (error) {
-                    showStatus('❌ ' + error.message, true);
-                }
-            });
-            
-            // Event listener untuk tombol salin URL
-            copyUrlBtn.addEventListener('click', function() {
-                navigator.clipboard.writeText(cdnUrl.textContent).then(function() {
-                    showStatus('✅ URL berhasil disalin ke clipboard!');
-                }).catch(function() {
-                    showStatus('❌ Gagal menyalin URL', true);
-                });
+            downloadBtn.addEventListener('click', function() {
+                showStatus('Membuat dan mengunduh gambar...');
+                convertToImage();
             });
             
             // Event listener untuk perubahan format
             formatSelect.addEventListener('change', function() {
-                if (formatSelect.value === 'jpeg') {
-                    qualityGroup.style.display = 'block';
-                } else {
-                    qualityGroup.style.display = 'none';
-                }
+                qualityInput.disabled = formatSelect.value !== 'jpeg';
+                updateJsonResponse();
             });
+            
+            // Event listener untuk perubahan kualitas
+            qualityInput.addEventListener('change', updateJsonResponse);
             
             // Periksa parameter URL saat halaman dimuat
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('sender') || urlParams.has('message') || 
-                urlParams.has('date') || urlParams.has('time')) {
+                urlParams.has('date') || urlParams.has('time') ||
+                urlParams.has('format') || urlParams.has('quality')) {
                 
                 if (urlParams.has('sender')) senderInput.value = urlParams.get('sender');
                 if (urlParams.has('message')) messageInput.value = urlParams.get('message');
                 if (urlParams.has('date')) dateInput.value = urlParams.get('date');
                 if (urlParams.has('time')) timeInput.value = urlParams.get('time');
+                if (urlParams.has('format')) formatSelect.value = urlParams.get('format');
+                if (urlParams.has('quality')) qualityInput.value = urlParams.get('quality');
                 
                 updateSMSDisplay();
                 
-                // Auto-preview jika ada parameter
+                // Jika ada parameter URL, langsung buat pratinjau gambar
                 setTimeout(() => {
-                    showStatus('Membuat pratinjau dari parameter URL...', false, true);
-                    previewBtn.click();
-                }, 1000);
+                    showStatus('Membuat pratinjau dari parameter URL...');
+                    convertToImage(null, true);
+                }, 500);
             }
             
             // Inisialisasi tampilan
             updateSMSDisplay();
+            qualityInput.disabled = formatSelect.value !== 'jpeg';
         });
     </script>
 </body>
