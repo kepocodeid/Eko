@@ -1,16 +1,20 @@
-// api/sms-image.js
+import html2canvas from 'html2canvas';
+import { JSDOM } from 'jsdom';
+import fetch from 'node-fetch';
+import FormData from 'form-data';
+import { fileTypeFromBuffer } from 'file-type';
+
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Handle OPTIONS request for CORS preflight
+  // Handle OPTIONS request for CORS
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // Only allow GET requests
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -18,40 +22,93 @@ export default async function handler(req, res) {
   try {
     const { sender, message, date, time, format = 'png', quality = 0.9 } = req.query;
 
-    // Validate required parameters
+    // Validasi parameter required
     if (!sender || !message) {
       return res.status(400).json({ 
-        error: 'Missing required parameters: sender and message are required' 
+        error: 'Parameter sender dan message diperlukan' 
       });
     }
 
-    // Generate HTML content for the SMS
-    const htmlContent = generateSMSHTML(sender, message, date, time);
+    // Generate HTML content
+    const htmlContent = generateHTML(sender, message, date, time);
     
-    // Set response headers based on format
-    const contentType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
-    const filename = `sms-${sender.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}.${format}`;
-    
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
-    res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+    // Create virtual DOM
+    const dom = new JSDOM(htmlContent, {
+      resources: 'usable',
+      runScripts: 'dangerously'
+    });
 
-    // For Vercel, we'll redirect to the main page with parameters
-    // since we can't easily render HTML to image in serverless function
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000';
+    const document = dom.window.document;
+    await dom.window.customElements.whenDefined;
+
+    // Wait for resources to load
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Get the SMS mockup element
+    const smsMockup = document.getElementById('sms-mockup');
     
-    // Redirect to the main page which will handle the image generation
-    res.redirect(302, `${baseUrl}/?${new URLSearchParams(req.query).toString()}`);
+    if (!smsMockup) {
+      throw new Error('Element SMS mockup tidak ditemukan');
+    }
+
+    // Convert to canvas
+    const canvas = await html2canvas(smsMockup, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: null,
+      width: 360,
+      height: 420
+    });
+
+    // Convert to buffer
+    let buffer;
+    const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
     
+    if (format === 'jpeg') {
+      buffer = canvas.toBuffer('image/jpeg', { 
+        quality: parseFloat(quality) 
+      });
+    } else {
+      buffer = canvas.toBuffer('image/png');
+    }
+
+    // Upload to Catxbox CDN
+    const cdnUrl = await uploadToCatxbox(buffer, mimeType);
+
+    // Set response headers based on request
+    if (req.query.download === 'true') {
+      res.setHeader('Content-Type', mimeType);
+      res.setHeader('Content-Disposition', `attachment; filename="sms-${Date.now()}.${format}"`);
+      return res.send(buffer);
+    }
+
+    // Return JSON response with CDN URL
+    return res.json({
+      success: true,
+      image_url: cdnUrl,
+      cdn: 'catxbox',
+      format: format,
+      quality: format === 'jpeg' ? parseFloat(quality) : 1.0,
+      parameters: {
+        sender,
+        message,
+        date: date || '08/07/2025',
+        time: time || '14:55'
+      }
+    });
+
   } catch (error) {
     console.error('Error generating SMS image:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ 
+      error: 'Gagal menghasilkan gambar SMS',
+      details: error.message 
+    });
   }
 }
 
-function generateSMSHTML(sender, message, date = '08/07/2025', time = '14:55') {
+// Function to generate HTML template
+function generateHTML(sender, message, date = '08/07/2025', time = '14:55') {
   return `
 <!DOCTYPE html>
 <html>
@@ -70,15 +127,20 @@ function generateSMSHTML(sender, message, date = '08/07/2025', time = '14:55') {
             --icon-line: #ffffff;
         }
         
-        body {
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+        }
+        
+        body {
+            font-family: "Courier New", Courier, monospace;
             background: #111;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            font-family: "Courier New", Courier, monospace;
+            padding: 20px;
         }
         
         .phone {
@@ -113,17 +175,6 @@ function generateSMSHTML(sender, message, date = '08/07/2025', time = '14:55') {
             border: 3px solid #053f36;
             display: flex;
             flex-direction: column;
-        }
-        
-        .screen::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-            background-size: 3px 3px;
-            opacity: 0.7;
         }
         
         .header {
@@ -203,10 +254,9 @@ function generateSMSHTML(sender, message, date = '08/07/2025', time = '14:55') {
     </style>
 </head>
 <body>
-    <div class="phone">
+    <div class="phone" id="sms-mockup">
         <div class="bezel">
             <div class="screen">
-                <!-- HEADER -->
                 <div class="header">
                     <div class="left">
                         <svg class="icon-svg" viewBox="0 0 24 24">
@@ -220,7 +270,7 @@ function generateSMSHTML(sender, message, date = '08/07/2025', time = '14:55') {
                             <polyline points="2,6 12,13 22,6" stroke="var(--icon-alt)" stroke-width="2" fill="none"/>
                         </svg>
                     </div>
-                    <div class="title">${escapeHtml(sender)}</div>
+                    <div class="title" id="sender-name">${escapeHtml(sender)}</div>
                     <div class="right">
                         <svg class="icon-svg" viewBox="0 0 24 24">
                             <circle cx="12" cy="13" r="6" stroke="var(--icon-main)" fill="none" stroke-width="2"/>
@@ -241,16 +291,14 @@ function generateSMSHTML(sender, message, date = '08/07/2025', time = '14:55') {
                         </svg>
                     </div>
                 </div>
-                <!-- MESSAGE -->
                 <div class="body">
-                    <div class="message">${escapeHtml(message)}</div>
+                    <div class="message" id="message-content">${escapeHtml(message)}</div>
                     <div class="meta">
                         <div>Dari:</div>
-                        <div class="from">${escapeHtml(sender)}</div>
-                        <div class="date">${escapeHtml(date)}<br>${escapeHtml(time)}</div>
+                        <div class="from" id="from-name">${escapeHtml(sender)}</div>
+                        <div class="date" id="message-date">${escapeHtml(date)}<br>${escapeHtml(time)}</div>
                     </div>
                 </div>
-                <!-- MENU -->
                 <div class="bottom-bar">
                     <div class="menu-left">Pilihan</div>
                     <div class="menu-right">Kembali</div>
@@ -263,6 +311,38 @@ function generateSMSHTML(sender, message, date = '08/07/2025', time = '14:55') {
   `;
 }
 
+// Function to upload to Catxbox CDN
+async function uploadToCatxbox(buffer, mimeType) {
+  try {
+    const formData = new FormData();
+    const fileType = await fileTypeFromBuffer(buffer);
+    const ext = fileType?.ext || 'png';
+    const filename = `sms-${Date.now()}.${ext}`;
+    
+    formData.append('reqtype', 'fileupload');
+    formData.append('fileToUpload', buffer, {
+      filename: filename,
+      contentType: mimeType
+    });
+
+    const response = await fetch('https://catbox.moe/user/api.php', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.statusText}`);
+    }
+
+    const result = await response.text();
+    return result;
+  } catch (error) {
+    console.error('Error uploading to Catxbox:', error);
+    throw new Error('Gagal mengupload gambar ke CDN');
+  }
+}
+
+// Helper function to escape HTML
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
