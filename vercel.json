@@ -4,39 +4,17 @@
     {
       "src": "api/sms-image.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "public/**/*",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
+      "src": "/api/sms-image",
       "dest": "/api/sms-image.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/$1"
     }
   ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET,OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type"
-        }
-      ]
+  "functions": {
+    "api/sms-image.js": {
+      "maxDuration": 30
     }
-  ]
+  }
 }
