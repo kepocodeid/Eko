@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Generator SMS ke Gambar - Pak Eko</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📱 API Generator SMS ke Gambar - Pak Eko</h1>
+            <p>Generate gambar SMS dengan desain menarik langsung dari browser</p>
+        </header>
+
+        <div class="main-content">
+            <div class="preview-section">
+                <h2>Pratinjau SMS</h2>
+                <div class="phone-mockup" id="sms-preview">
+                    <div class="phone">
+                        <div class="bezel">
+                            <div class="screen">
+                                <div class="header">
+                                    <div class="header-left">
+                                        <div class="signal-icon"></div>
+                                        <div class="sms-icon"></div>
+                                    </div>
+                                    <div class="sender-name" id="preview-sender">Pak Eko</div>
+                                    <div class="header-right">
+                                        <div class="alarm-icon"></div>
+                                        <div class="vibrate-icon"></div>
+                                        <div class="battery-icon"></div>
+                                    </div>
+                                </div>
+                                <div class="message-content">
+                                    <div class="message-text" id="preview-message">
+                                        Kita ga enakan, orang seenaknya
+                                    </div>
+                                    <div class="message-meta">
+                                        <div class="meta-label">Dari:</div>
+                                        <div class="sender-meta" id="preview-sender-meta">Pak Eko</div>
+                                        <div class="datetime" id="preview-datetime">
+                                            08/07/2025<br>14:55
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bottom-bar">
+                                    <span>Pilihan</span>
+                                    <span>Kembali</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="customize">Kustomisasi</button>
+                    <button class="tab-button" data-tab="api">API Generator</button>
+                    <button class="tab-button" data-tab="preview">Pratinjau & Download</button>
+                </div>
+
+                <div class="tab-content active" id="customize-tab">
+                    <h3>Kustomisasi SMS</h3>
+                    <div class="form-group">
+                        <label for="sender">Nama Pengirim:</label>
+                        <input type="text" id="sender" value="Pak Eko" placeholder="Masukkan nama pengirim">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Isi Pesan:</label>
+                        <textarea id="message" placeholder="Masukkan isi pesan SMS">Kita ga enakan, orang seenaknya</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Tanggal:</label>
+                        <input type="text" id="date" value="08/07/2025" placeholder="DD/MM/YYYY">
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Waktu:</label>
+                        <input type="text" id="time" value="14:55" placeholder="HH:MM">
+                    </div>
+                    <button id="update-preview" class="btn-primary">Perbarui Pratinjau</button>
+                    <button id="reset-values" class="btn-secondary">Reset ke Default</button>
+                </div>
+
+                <div class="tab-content" id="api-tab">
+                    <h3>Generator URL API</h3>
+                    <div class="form-group">
+                        <label for="format">Format Gambar:</label>
+                        <select id="format">
+                            <option value="png">PNG (Kualitas Terbaik)</option>
+                            <option value="jpeg">JPEG (Ukuran Lebih Kecil)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quality">Kualitas JPEG (0.1-1.0):</label>
+                        <input type="number" id="quality" min="0.1" max="1.0" step="0.1" value="0.9">
+                    </div>
+                    <button id="generate-api" class="btn-primary">Generate API URL</button>
+                    
+                    <div class="api-result">
+                        <label>URL API:</label>
+                        <div class="api-url" id="api-url">URL akan muncul di sini...</div>
+                        <button id="copy-url" class="btn-secondary">Salin URL</button>
+                    </div>
+
+                    <div class="api-test">
+                        <h4>Test API Langsung:</h4>
+                        <button id="test-api" class="btn-primary">Test API</button>
+                        <div class="test-result" id="test-result"></div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="preview-tab">
+                    <h3>Pratinjau & Download Gambar</h3>
+                    <div class="action-buttons">
+                        <button id="generate-image" class="btn-primary">Generate Gambar</button>
+                        <button id="download-image" class="btn-success" disabled>Download Gambar</button>
+                    </div>
+                    
+                    <div class="image-preview">
+                        <h4>Pratinjau Gambar:</h4>
+                        <div id="image-container">
+                            <img id="generated-image" src="" alt="Gambar akan muncul di sini">
+                        </div>
+                    </div>
+
+                    <div class="status-message" id="status-message"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="documentation">
+            <h2>📚 Dokumentasi API</h2>
+            <div class="code-example">
+                <h3>Contoh Penggunaan API:</h3>
+                <pre><code>// URL API dasar
+https://your-domain.vercel.app/api/sms-image
+
+// Parameter yang tersedia:
+// ?sender=NamaPengirim
+// &message=Isi%20Pesan
+// &date=DD/MM/YYYY
+// &time=HH:MM
+// &format=png|jpeg
+// &quality=0.1-1.0
+
+// Contoh penggunaan:
+const apiUrl = 'https://your-domain.vercel.app/api/sms-image?sender=Pak%20Eko&message=Halo%20dunia&date=08/07/2025&time=14:55&format=png';
+
+// Gunakan di tag img
+&lt;img src="${apiUrl}" alt="SMS dari Pak Eko"&gt;
+
+// Atau download via JavaScript
+fetch(apiUrl)
+  .then(response => response.blob())
+  .then(blob => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sms-pak-eko.png';
+    a.click();
+  });</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
